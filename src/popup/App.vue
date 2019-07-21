@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h2 class="header">{{ app_title }}</h2>
+    <div>
+      <h2 class="header">{{ app_title }}</h2>
+    </div>
+    
     <div class="container">
       <div>
         <div>
@@ -83,24 +86,28 @@ export default {
 body {
   text-align: center;
   font-size: 12px;
+  width: 400px;
+  height: auto;
 }
 
 .container {
-  width: 100%;
-  padding: 10px;
+  width: 95%;
+  margin: 5px;
 }
 
 .header {
-  display: inline-block;
+  display: inline-flex;
   font-size: 15px;
   text-align: center;
   margin-top: 10px;
+  border: 1px solid #4CAF50;
+  padding: 5px; 
+  border-radius: 5px;
 }
 
 .rows {
   display: block;
   width: 100%;
-  padding: 1px;
   margin-top: 5px;
   text-align: left;
 }
@@ -108,10 +115,9 @@ body {
 div > input, div > textarea {
   width: 100%;
   height: 40px;
-  border-top: 0px;
-  border-left: 0px;
-  border-right: 0px;
-  border-color: #39bda7;
+  border-color: #4CAF50;
+  border-radius: 5px;
+  border-width: 1px;
 }
 
 input:hover, textarea:hover{
@@ -123,7 +129,7 @@ label {
 }
 
 input {
-  width: 90%;
+  width: 100%;
 }
 
 .button-container {
