@@ -1,14 +1,14 @@
 {
   "author": {
-    "email": "mubaidr@gmail.com",
-    "name": "Muhammad Ubaid Raza",
-    "url": "https://mubaidr.github.io/"
+    "email": "nikhilsv92@gmail.com",
+    "name": "Nikhil Sonti",
+    "url": "https://shadowfax92.github.io/"
   },
   "dependencies": {
     "bulma-fluent": "^0.3.17",
     "vue": "^2.6.10"
   },
-  "description": "vue-chrome-extension-boilerplate",
+  "description": "dynalist-bookmarker",
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
@@ -44,10 +44,10 @@
     "webpack-cli": "^3.3.6"
   },
   "license": "MIT",
-  "name": "vue-chrome-extension-boilerplate",
+  "name": "dynalist-bookmarker",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mubaidr/vue-chrome-extension-boilerplate.git"
+    "url": "git+https://github.com/shadowfax92/Dynalist-Bookmarker"
   },
   "scripts": {
     "build": "npm run pack && npm run remove-evals && npm run zip",
