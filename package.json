@@ -5,6 +5,7 @@
     "url": "https://mubaidr.github.io/"
   },
   "dependencies": {
+    "axios": "^0.19.0",
     "bulma-fluent": "^0.3.17",
     "vue": "^2.6.10"
   },
