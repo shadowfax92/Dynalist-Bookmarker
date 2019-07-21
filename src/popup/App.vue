@@ -1,30 +1,37 @@
 <template>
   <div>
     <h2>{{ app_title }}</h2>
-    <form @submit.prevent="onSubmit">
-      <label>
-        <b>Title</b>
-      </label>
-      <input type="text" placeholder="Title of the bookmark" v-model="bookmark_title" />
-      <br />
-      <label>
-        <b>Url</b>
-      </label>
-      <input type="url" placeholder="Url" v-model="bookmark_url" />
-      <br />
-      <label>
-        <b>Tags</b>
-      </label>
-      <input type="text" placeholder="Tags. Ex, #read" v-model="bookmark_tags" />
-      <br />
-      <label>
-        <b>Notes</b>
-      </label>
-      <input type="text" placeholder="Any notes" v-model="bookmark_notes" />
-      <br />
-      <button :v-on:click="onSubmit">Store!</button>
-      <br />
-    </form>
+    <div class="flex-container">
+      <div>
+        <div class="rows">
+          <label>
+            <b>Title</b>
+          </label>
+          <input type="text" placeholder="Title of the bookmark" v-model="bookmark_title" />
+        </div>
+        <div>
+          <label>
+            <b>Url</b>
+          </label>
+          <input type="url" placeholder="Url" v-model="bookmark_url" />
+        </div>
+        <div class="rows">
+          <label>
+            <b>Tags</b>
+          </label>
+          <input type="text" placeholder="Tags. Ex, #read" v-model="bookmark_tags" />
+        </div>
+        <div class="rows">
+          <label>
+            <b>Notes</b>
+          </label>
+          <input type="text" placeholder="Any notes" v-model="bookmark_notes" />
+        </div>
+      </div>
+      <div>
+        <button class="button" :v-on:click="onSubmit">Store!</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -68,4 +75,20 @@ export default {
 }
 </script>
 
-<style lang="stylus"></style>
+<style>
+body {
+  text-align: center;
+  font-family: monaco, monospace;
+}
+
+h2 {
+  display: inline-block;
+  font-size: 20px;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+</style>
