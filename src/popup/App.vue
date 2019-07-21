@@ -1,35 +1,36 @@
 <template>
   <div>
-    <h2>{{ app_title }}</h2>
-    <div class="flex-container">
+    <h2 class="header">{{ app_title }}</h2>
+    <div class="container">
       <div>
-        <div class="rows">
-          <label>
-            <b>Title</b>
+        <div>
+          <label class="rows">
+            Title
           </label>
-          <input type="text" placeholder="Title of the bookmark" v-model="bookmark_title" />
+          <input class="rows" type="text" placeholder="Title of the bookmark" v-model="bookmark_title" />
         </div>
         <div>
-          <label>
-            <b>Url</b>
+          <label class="rows">
+            Url
           </label>
-          <input type="url" placeholder="Url" v-model="bookmark_url" />
+          <input class="rows" type="url" placeholder="Url" v-model="bookmark_url" />
         </div>
-        <div class="rows">
-          <label>
-            <b>Tags</b>
+        <div>
+          <label class="rows">
+            Tags
           </label>
-          <input type="text" placeholder="Tags. Ex, #read" v-model="bookmark_tags" />
+          <input class="rows" type="text" placeholder="Tags. Ex, #read" v-model="bookmark_tags" />
         </div>
-        <div class="rows">
-          <label>
-            <b>Notes</b>
+        <div>
+          <label class="rows">
+            Notes
           </label>
-          <input type="text" placeholder="Any notes" v-model="bookmark_notes" />
+          <textarea class="rows"  type="text" placeholder="Any notes" v-model="bookmark_notes"></textarea>
         </div>
       </div>
-      <div>
-        <button class="button" :v-on:click="onSubmit">Store!</button>
+      <div class="button-container">
+        <button class="button" v-on:click="onSubmit">Save</button>
+        <button class="button" v-on:click="onCancel">Cancel</button>
       </div>
     </div>
   </div>
@@ -71,24 +72,62 @@ export default {
         }
       )
     },
+    onCancel: function() {
+      window.close()
+    }
   },
 }
 </script>
 
-<style>
+<style lang="scss">
 body {
   text-align: center;
-  font-family: monaco, monospace;
+  font-size: 12px;
 }
 
-h2 {
+.container {
+  width: 100%;
+  padding: 10px;
+}
+
+.header {
   display: inline-block;
-  font-size: 20px;
+  font-size: 15px;
+  text-align: center;
+  margin-top: 10px;
 }
 
-.flex-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+.rows {
+  display: block;
+  width: 100%;
+  padding: 1px;
+  margin-top: 5px;
+  text-align: left;
+}
+
+div > input, div > textarea {
+  width: 100%;
+  height: 40px;
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 0px;
+  border-color: #39bda7;
+}
+
+input:hover, textarea:hover{
+  background: #f7ffff;
+}
+
+label {
+  text-transform: uppercase;
+}
+
+input {
+  width: 90%;
+}
+
+.button-container {
+  margin-top: 10px;
 }
 </style>
+

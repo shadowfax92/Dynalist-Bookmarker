@@ -5,7 +5,6 @@
     "url": "https://mubaidr.github.io/"
   },
   "dependencies": {
-    "axios": "^0.19.0",
     "bulma-fluent": "^0.3.17",
     "vue": "^2.6.10"
   },
@@ -14,6 +13,7 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "archiver": "^3.0.3",
+    "axios": "^0.19.0",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.0.3",
