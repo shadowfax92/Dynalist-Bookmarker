@@ -123,9 +123,11 @@ export default {
       }
     },
     onCancel: function() {
+      this.clearSavedData()
       this.closePopup()
     },
     closePopup: function() {
+      this.clearSavedData()
       window.close()
     },
     onChange: function() {
@@ -140,6 +142,16 @@ export default {
         }
       )
     },
+    clearSavedData: function() {
+      chrome.runtime.sendMessage(
+        {
+          action: 'session-store-remove-data',
+          key: this.page_url,
+        },
+        response => {
+          console.log(request.action)
+        });
+    }
   },
 }
 </script>

@@ -25,6 +25,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendMessageToPopup(sender, { action:'response-session-store-get-data', value: value[key] });
       });
       break;
+      case "session-store-remove-data":
+          SessionStorageDeleteItem(request.key);
+          break;
     default:
       break;
   }
@@ -48,5 +51,14 @@ function SessionStorageGetItem(key, callback) {
   // let value = window.sessionStorage.getItem(key);
   chrome.storage.local.get(key, (value) => {
     callback(value)
+  });
+};
+
+function SessionStorageDeleteItem(key) {
+  chrome.storage.local.remove(key, () => {
+    var error = chrome.runtime.lastError;
+    if (error) {
+        console.error("SessionStorageDeleteItem" + error);
+    }
   });
 };
