@@ -79,7 +79,6 @@ export default {
       chrome.runtime.sendMessage({ action: 'session-store-get-data', key: this.page_url }, (response) => {});
       chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (true) {
-          console.log(sender);
           console.log('received response-session-store-get-data')
           if (message.action == 'response-session-store-get-data' && message.value !== undefined) {
             console.log(message.value);

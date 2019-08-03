@@ -5,13 +5,7 @@ const DYNALIST_APIS = {
     list: 'https://dynalist.io/api/v1/file/list',
 }
 
-const DYNALIST_CONFIG = {
-    note_id: 'jkKwmcyV5dt_fT1LLPRKShzT',
-    api_token: 'BsECT6ckocUphrQFvDo6_H1WKa-5Ggy1DE1zq1kRMtRfZ6aen0DJAYH9DPzqjYXn9dlZZNkDA9FIbQTkMJCGuFJzKKaeWzSy3GBhDy3lmNbGnW8-0VZ9dI0KQaDZd2mS'
-
-}
-
-const addToBookmarks = (bookmarks_object, callback) => {
+const addToBookmarks = (config, bookmarks_object, callback) => {
     let dynalist_title = '[' + bookmarks_object.title + '](' + bookmarks_object.url + ')'
     let dynalist_note = '';
     if (bookmarks_object.tags !== '') {
@@ -21,18 +15,16 @@ const addToBookmarks = (bookmarks_object, callback) => {
     if (bookmarks_object.notes !== '') {
         dynalist_note = bookmarks_object.notes
     }
-
-    let chrome_bookmarks_id = 'root'
-    dynalist_insert_api(DYNALIST_CONFIG.note_id, chrome_bookmarks_id, dynalist_title, dynalist_note, callback)
+    dynalist_insert_api(config.api_token, config.bookmark_note_id, 'root', dynalist_title, dynalist_note, callback);
 }
 
-const validateToken = (api_token, callback)=> {
+const validateToken = (api_token, callback) => {
     dynalist_list_api(api_token, callback)
 }
 
-const dynalist_insert_api = (file_id, parent_id, title, note, callback) => {
+const dynalist_insert_api = (api_token, file_id, parent_id, title, note, callback) => {
     let body = {
-        'token': DYNALIST_CONFIG.api_token,
+        'token': api_token,
         'file_id': file_id,
         'changes': [
             {
@@ -46,7 +38,7 @@ const dynalist_insert_api = (file_id, parent_id, title, note, callback) => {
         ]
     }
     axios.post(DYNALIST_APIS.edit, body).then(function (response) {
-        
+
         if (callback !== undefined) {
             callback(dynalist_response_parser(response))
         }

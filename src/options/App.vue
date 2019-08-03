@@ -17,7 +17,7 @@
         <div class="rows" v-if="showTokenResponse">
           <span v-if="isValidationSuccessful">Is a valid token. Hurray! 🎉</span>
           <span
-            v-if="isValidationSuccessful"
+            v-if="!isValidationSuccessful"
           >Entered token is invalid 😢. Clear the token and copy-paste the whole thing again.</span>
         </div>
         <br />
@@ -101,8 +101,24 @@ export default {
         }
       })
     },
-    onSave: function() {},
-    onCancel: function() {},
+    onSave: function() {
+      let config = {
+        api_token: this.api_token,
+        is_inbox: this.bookmarkLocation.is_inbox,
+        bookmark_note_id: this.bookmarkLocation.id,
+      }
+      chrome.runtime.sendMessage(
+        {
+          action: 'store-dynalist-config',
+          value: config,
+        },
+        response => {}
+      )
+      window.close()
+    },
+    onCancel: function() {
+      window.close()
+    },
     onChangeBookmarkSelection: function(caller) {
       console.log(caller)
       if (caller == 'inbox' && this.isInboxCheckboxChecked) {

@@ -8,8 +8,11 @@ chrome.runtime.onInstalled.addListener(details => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.action) {
     case "send-to-dynalist":
-      console.log("storing data: " + request.data);
-      addToBookmarks(request.data);
+      get_dynalist_config((response) => {
+        let dynalist_config = response.value;
+        addToBookmarks(dynalist_config, request.data);
+      })
+
       // response is not sent back to popup.js as it's not doesn't have a tab-id.
       // you need a listener in popup.js to get data.
       // sendResponse({ action: "saved" });
@@ -28,11 +31,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       case "session-store-remove-data":
           SessionStorageDeleteItem(request.key);
           break;
+      case "store-dynalist-config":
+          sessionStorageSetItem("config", request.value);
+          break;
     default:
       break;
   }
 }
 );
+
+const get_dynalist_config = (callback) => {
+  SessionStorageGetItem('config', (value) => {
+    callback({value: value['config'] });
+  })
+}
 
 function sendMessageToPopup(tab_id, value) {
   chrome.runtime.sendMessage(value, (response) => {
