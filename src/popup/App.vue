@@ -70,22 +70,28 @@ export default {
     }
   },
   mounted() {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      switch (message.action) {
+        case 'response-popup-get-session-data':
+          if (message.value !== undefined) {
+            this.setPageData(message.value)
+          }
+          break
+        default:
+          break
+      }
+    })
+
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
       var activeTab = tabs[0]
       this.bookmark_title = activeTab.title
       this.bookmark_url = activeTab.url
       this.page_url = activeTab.url
 
-      chrome.runtime.sendMessage({ action: 'session-store-get-data', key: this.page_url }, (response) => {});
-      chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (true) {
-          console.log('received response-session-store-get-data')
-          if (message.action == 'response-session-store-get-data' && message.value !== undefined) {
-            console.log(message.value);
-            this.setPageData(message.value);
-          }
-        }
-      });
+      chrome.runtime.sendMessage(
+        { action: 'popup-get-session-data', key: this.page_url },
+        response => {}
+      )
     })
   },
   methods: {
@@ -132,7 +138,7 @@ export default {
     onChange: function() {
       chrome.runtime.sendMessage(
         {
-          action: 'session-store-set-data',
+          action: 'popup-store-session-data',
           key: this.page_url,
           value: this.getPageData(),
         },
@@ -144,13 +150,14 @@ export default {
     clearSavedData: function() {
       chrome.runtime.sendMessage(
         {
-          action: 'session-store-remove-data',
+          action: 'popup-remove-session-data',
           key: this.page_url,
         },
         response => {
           console.log(request.action)
-        });
-    }
+        }
+      )
+    },
   },
 }
 </script>

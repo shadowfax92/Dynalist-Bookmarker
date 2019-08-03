@@ -17,23 +17,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       // you need a listener in popup.js to get data.
       // sendResponse({ action: "saved" });
       break;
-    case "session-store-set-data":
-      sessionStorageSetItem(request.key, request.value);
+    case "popup-store-session-data":
+      chrome_local_store_data(request.key, request.value);
       break;
-    case "session-store-get-data":
+    case "popup-get-session-data":
       let key = request.key;
-      
-      SessionStorageGetItem(request.key, (value) => {
-        sendResponse({ action:'', value: value[key] });
-        sendMessageToPopup(sender, { action:'response-session-store-get-data', value: value[key] });
+
+      chrome_local_get_data(request.key, (value) => {
+        send_runtime_message(sender, { action: 'response-popup-get-session-data', value: value[key] });
       });
       break;
-      case "session-store-remove-data":
-          SessionStorageDeleteItem(request.key);
-          break;
-      case "store-dynalist-config":
-          sessionStorageSetItem("config", request.value);
-          break;
+    case "popup-remove-session-data":
+      chrome_local_remove_data(request.key);
+      break;
+    case "store-dynalist-config":
+      chrome_local_store_data("config", request.value);
+      break;
     default:
       break;
   }
@@ -41,36 +40,36 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 );
 
 const get_dynalist_config = (callback) => {
-  SessionStorageGetItem('config', (value) => {
-    callback({value: value['config'] });
+  chrome_local_get_data('config', (value) => {
+    callback({ value: value['config'] });
   })
 }
 
-function sendMessageToPopup(tab_id, value) {
+const send_runtime_message = (tab_id, value) => {
   chrome.runtime.sendMessage(value, (response) => {
-    console.log("sendMessageToPopup: response = " + response);
+    console.log("send_runtime_message: response = " + response);
   });
 }
 
-function sessionStorageSetItem(key, value) {
+const chrome_local_store_data = (key, value) => {
   // window.sessionStorage.setItem(key, value)
   let obj = {};
   obj[key] = value;
   chrome.storage.local.set(obj);
 };
 
-function SessionStorageGetItem(key, callback) {
+const chrome_local_get_data = (key, callback) => {
   // let value = window.sessionStorage.getItem(key);
   chrome.storage.local.get(key, (value) => {
     callback(value)
   });
 };
 
-function SessionStorageDeleteItem(key) {
+const chrome_local_remove_data = (key) => {
   chrome.storage.local.remove(key, () => {
     var error = chrome.runtime.lastError;
     if (error) {
-        console.error("SessionStorageDeleteItem" + error);
+      console.error("chrome_local_remove_data" + error);
     }
   });
 };
