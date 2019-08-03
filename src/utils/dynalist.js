@@ -15,7 +15,7 @@ export function addToBookmarks(bookmarks_object, callback) {
     }
 
     let bookmarks_file_id = 'jkKwmcyV5dt_fT1LLPRKShzT'
-    let chrome_bookmarks_id = 'Saeea9aISuVlqrVJRQ83yPTx'
+    let chrome_bookmarks_id = 'root'
     dynalistInsert(bookmarks_file_id, chrome_bookmarks_id, dynalist_title, dynalist_note, callback)
 }
 
