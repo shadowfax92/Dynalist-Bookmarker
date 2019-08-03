@@ -190,9 +190,14 @@ div > input,
 div > textarea {
   width: 100%;
   height: 40px;
-  border-color: #79bcff;
-  border-radius: 5px;
-  border-width: 1px;
+  // border-color: #79bcff;
+  // border-radius: 5px;
+  // border-width: 1px;
+
+  border: 0;
+  outline: 0;
+  background: transparent;
+  border-bottom: 1px solid #79bcff;
 }
 
 input:hover,
