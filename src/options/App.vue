@@ -22,7 +22,7 @@
         </div>
         <br />
         <span class="rows">
-          <b class="privacy">PRIVACY: </b>Note, the token is never upload and is only accessible on this browser.
+          <b class="privacy">PRIVACY:</b>Note, the token is never upload and is only accessible on this browser.
         </span>
       </div>
       <div class="box" v-if="showBookmarksSelectionBox">
@@ -34,10 +34,11 @@
             type="checkbox"
             id="send-to-inbox-checkbox"
             v-model="isInboxCheckboxChecked"
+            @change="onChangeBookmarkSelection('inbox')"
           />Send to Inbox
         </span>
         <label class="rows">OR</label>
-        <select v-model="bookmarkDropdownSelected">
+        <select v-model="bookmarkDropdownSelected" @change="onChangeBookmarkSelection('dropdown')">
           <option
             v-for="option in options"
             v-bind:key="option.id"
@@ -66,23 +67,27 @@ export default {
       showTokenResponse: false,
       defaultBookmarkLocationSelected: false,
       options: [],
+      bookmarkLocation: {
+        is_inbox: undefined,
+        id: undefined,
+        text: undefined,
+      },
     }
   },
   computed: {
     showBookmarksSelectionBox: function() {
-      return this.isValidToken;
+      return this.isValidToken
     },
     showButtons: function() {
-      return this.defaultBookmarkLocationSelected && this.isValidToken;
+      return this.defaultBookmarkLocationSelected && this.isValidToken
     },
     isValidationSuccessful: function() {
       if (this.isValidToken) {
-        return true;
+        return true
+      } else {
+        return false
       }
-      else {
-        return false;
-      }
-    }
+    },
   },
   methods: {
     onApiTokenChange: function() {
@@ -98,6 +103,20 @@ export default {
     },
     onSave: function() {},
     onCancel: function() {},
+    onChangeBookmarkSelection: function(caller) {
+      console.log(caller)
+      if (caller == 'inbox' && this.isInboxCheckboxChecked) {
+        this.bookmarkLocation.is_inbox = true
+        this.bookmarkLocation.text = 'Inbox'
+        this.bookmarkDropdownSelected = undefined
+      } else if (caller == 'dropdown' || this.isInboxCheckboxChecked == false) {
+        this.bookmarkLocation.is_inbox = false
+        this.isInboxCheckboxChecked = false
+        this.bookmarkLocation.id = this.bookmarkDropdownSelected.id
+        this.bookmarkLocation.text = this.bookmarkDropdownSelected.text
+      }
+      this.defaultBookmarkLocationSelected = true
+    },
     extractDynalistDocuments: function(dynalist_nodes) {
       console.log(dynalist_nodes)
       let documents = []
@@ -115,6 +134,7 @@ export default {
     },
     populateOptions: function(documents) {
       this.options = []
+      this.defaultBookmarkLocationSelected = false
 
       documents.forEach(document => {
         this.options.push({
