@@ -33,15 +33,15 @@
             style="width: auto; margin-right: 5px;"
             type="checkbox"
             id="send-to-inbox-checkbox"
+            v-model="isInboxCheckboxChecked"
           />Send to Inbox
         </span>
         <label class="rows">OR</label>
-        <span class="rows">Choose a note from dropdown. Selected = {{ selected }}</span>
-        <select v-model="selected">
+        <select v-model="bookmarkDropdownSelected">
           <option
             v-for="option in options"
-            v-bind:key="option.text"
-            v-bind:value="option.value"
+            v-bind:key="option.id"
+            v-bind:value="option"
           >{{ option.text }}</option>
         </select>
       </div>
@@ -55,24 +55,49 @@ import { validateToken } from '../utils/dynalist'
 export default {
   data() {
     return {
-      selected: 'None',
+      bookmarkDropdownSelected: undefined,
+      isInboxCheckboxChecked: false,
       api_token: '',
       isValidToken: undefined,
       showTokenResponse: false,
-      options: [
-        { text: 'One', value: 'A' },
-        { text: 'Two', value: 'B' },
-        { text: 'Three', value: 'C' },
-      ],
+      options: [],
     }
   },
   methods: {
     onApiTokenChange: function() {
       console.log('Api token changed to ' + this.api_token)
       validateToken(this.api_token, response => {
-        console.log(response)
         this.isValidToken = response.success
         this.showTokenResponse = true
+
+        if (this.isValidToken) {
+          this.extractDynalistDocuments(response.value['files'])
+        }
+      })
+    },
+    extractDynalistDocuments: function(dynalist_nodes) {
+      console.log(dynalist_nodes)
+      let documents = []
+      dynalist_nodes.forEach(node => {
+        if (node['type'] == 'document') {
+          let document = {
+            id: node.id,
+            title: node.title,
+          }
+          documents.push(document)
+        }
+
+        this.populateOptions(documents)
+      })
+    },
+    populateOptions: function(documents) {
+      this.options = []
+
+      documents.forEach(document => {
+        this.options.push({
+          text: document.title,
+          id: document.id,
+        })
       })
     },
   },
