@@ -46,15 +46,9 @@ const dynalist_insert_api = (file_id, parent_id, title, note, callback) => {
         ]
     }
     axios.post(DYNALIST_APIS.edit, body).then(function (response) {
-        let status = {}
-        if (response._code == 'Ok') {
-            status = { success: true }
-        }
-        else {
-            status = { success: false, error: response._code }
-        }
+        
         if (callback !== undefined) {
-            callback(status)
+            callback(dynalist_response_parser(response))
         }
     })
 }
@@ -64,18 +58,27 @@ const dynalist_list_api = (api_token, callback) => {
         'token': api_token
     }
     axios.post(DYNALIST_APIS.list, body).then((response) => {
-        let status = {}
-        if (response._code == 'Ok') {
-            status = { success: true, value: response }
-        }
-        else {
-            status = { success: false }
-        }
-
         if (callback !== undefined) {
-            callback(status)
+            callback(dynalist_response_parser(response))
         }
     })
+}
+
+const dynalist_response_parser = (response) => {
+    let status = {}
+    if (response.status == '200') {
+        if (response.data !== undefined && response.data['_code'] == 'Ok') {
+            status['success'] = true;
+            status['value'] = response.data
+        }
+        else {
+            status['success'] = false;
+        }
+    }
+    else {
+        status['success'] = false;
+    }
+    return status;
 }
 
 export {

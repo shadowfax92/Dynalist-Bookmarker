@@ -7,12 +7,25 @@
           Please copy and paste the token from
           <a href="https://dynalist.io/developer">dynalist link.</a>
         </span>
-        <input class="rows" type="text" placeholder="Paste the API token" />
+        <input
+          class="rows"
+          type="text"
+          placeholder="Paste the API token"
+          v-model="api_token"
+          v-on:change="onApiTokenChange()"
+        />
+        <div class="rows" v-if="showTokenResponse">
+          <span v-if="isValidToken">Is a valid token. Hurray! 🎉</span>
+          <span
+            v-if="!isValidToken"
+          >Entered token is invalid 😢. Clear the token and copy-paste the whole thing again.</span>
+        </div>
+        <br />
         <span class="rows">
-          <b class="privacy">PRIVACY: </b>Note, the token is never upload and is only accessible on this browser.
+          <b class="privacy">PRIVACY:</b>Note, the token is never upload and is only accessible on this browser.
         </span>
       </div>
-      <div class="box">
+      <div class="box" v-if="isValidToken">
         <label class="rows">Step-2: Bookmarks location</label>
         <span class="rows">Please select the location for your bookmarks.</span>
         <span class="rows">
@@ -25,7 +38,11 @@
         <label class="rows">OR</label>
         <span class="rows">Choose a note from dropdown. Selected = {{ selected }}</span>
         <select v-model="selected">
-          <option v-for="option in options" v-bind:key="option.text" v-bind:value="option.value">{{ option.text }}</option>
+          <option
+            v-for="option in options"
+            v-bind:key="option.text"
+            v-bind:value="option.value"
+          >{{ option.text }}</option>
         </select>
       </div>
     </div>
@@ -33,16 +50,36 @@
 </template>
 
 <script>
+import { validateToken } from '../utils/dynalist'
+
 export default {
   data() {
     return {
       selected: 'None',
+      api_token: '',
+      isValidToken: undefined,
+      showTokenResponse: false,
       options: [
         { text: 'One', value: 'A' },
         { text: 'Two', value: 'B' },
-        { text: 'Three', value: 'C' }
-      ]
+        { text: 'Three', value: 'C' },
+      ],
     }
+  },
+  methods: {
+    onApiTokenChange: function() {
+      console.log('Api token changed to ' + this.api_token)
+      validateToken(this.api_token, response => {
+        console.log(response)
+        this.isValidToken = response.success
+        this.showTokenResponse = true
+      })
+    },
+  },
+  watch: {
+    // api_token: function(old_val, new_val) {
+    //   console.log("Api token: old_val = " + old_val + " new_val = " + new_val);
+    // }
   },
 }
 </script>
