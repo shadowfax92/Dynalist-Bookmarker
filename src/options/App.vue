@@ -15,17 +15,17 @@
           v-on:change="onApiTokenChange()"
         />
         <div class="rows" v-if="showTokenResponse">
-          <span v-if="isValidToken">Is a valid token. Hurray! 🎉</span>
+          <span v-if="isValidationSuccessful">Is a valid token. Hurray! 🎉</span>
           <span
-            v-if="!isValidToken"
+            v-if="isValidationSuccessful"
           >Entered token is invalid 😢. Clear the token and copy-paste the whole thing again.</span>
         </div>
         <br />
         <span class="rows">
-          <b class="privacy">PRIVACY:</b>Note, the token is never upload and is only accessible on this browser.
+          <b class="privacy">PRIVACY: </b>Note, the token is never upload and is only accessible on this browser.
         </span>
       </div>
-      <div class="box" v-if="isValidToken">
+      <div class="box" v-if="showBookmarksSelectionBox">
         <label class="rows">Step-2: Bookmarks location</label>
         <span class="rows">Please select the location for your bookmarks.</span>
         <span class="rows">
@@ -46,7 +46,7 @@
         </select>
       </div>
     </div>
-    <div class="button-container box" v-if="defaultBookmarkLocationSelected && isValidToken">
+    <div class="button-container box" v-if="showButtons">
       <button class="myButtonSave" v-on:click="onSave">Save</button>
       <button class="myButtonCancel" v-on:click="onCancel">Cancel</button>
     </div>
@@ -66,6 +66,22 @@ export default {
       showTokenResponse: false,
       defaultBookmarkLocationSelected: false,
       options: [],
+    }
+  },
+  computed: {
+    showBookmarksSelectionBox: function() {
+      return this.isValidToken;
+    },
+    showButtons: function() {
+      return this.defaultBookmarkLocationSelected && this.isValidToken;
+    },
+    isValidationSuccessful: function() {
+      if (this.isValidToken) {
+        return true;
+      }
+      else {
+        return false;
+      }
     }
   },
   methods: {
