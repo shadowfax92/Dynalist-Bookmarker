@@ -22,6 +22,27 @@ const validateToken = (api_token, callback) => {
     dynalist_list_api(api_token, callback)
 }
 
+const fetchDocuments = (api_token, callback) => {
+    dynalist_list_api(api_token, (response) => {
+        let documents = [];
+        if (response.success) {
+            let files = response.data['files'];
+            files.forEach(node => {
+                if (node['type'] == 'document') {
+                    let document = {
+                        id: node.id,
+                        title: node.title,
+                    }
+                    documents.push(document)
+                }
+            })
+        }
+        callback({
+            value: documents   
+        })
+    });
+}
+
 const dynalist_insert_api = (api_token, file_id, parent_id, title, note, callback) => {
     let body = {
         'token': api_token,
@@ -75,5 +96,6 @@ const dynalist_response_parser = (response) => {
 
 export {
     addToBookmarks,
-    validateToken
+    validateToken,
+    fetchDocuments
 }

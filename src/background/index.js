@@ -1,4 +1,4 @@
-import { addToBookmarks, validateToken } from '../utils/dynalist'
+import { addToBookmarks, validateToken, fetchDocuments } from '../utils/dynalist'
 
 // OnInstall handler
 chrome.runtime.onInstalled.addListener(details => {
