@@ -2,7 +2,9 @@ import { addToBookmarks, validateToken, fetchDocuments } from '../utils/dynalist
 
 // OnInstall handler
 chrome.runtime.onInstalled.addListener(details => {
-  console.log(details);
+  if (details.reason == "install") {
+    open_settings();
+  }
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -46,6 +48,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 }
 );
+
+const open_settings = () => {
+  chrome.tabs.create({ 'url': 'chrome://extensions/?options=' + chrome.runtime.id });
+  //   chrome.tabs.create({ url: "options.html" });
+}
 
 const get_dynalist_config = (callback) => {
   chrome_local_get_data('config', (value) => {
