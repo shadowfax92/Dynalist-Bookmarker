@@ -1,4 +1,4 @@
-import { addToBookmarks } from '../utils/dynalist'
+import { addToBookmarks, validateToken } from '../utils/dynalist'
 
 // OnInstall handler
 chrome.runtime.onInstalled.addListener(details => {
@@ -24,7 +24,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       let key = request.key;
 
       chrome_local_get_data(request.key, (value) => {
-        send_runtime_message(sender, { action: 'response-popup-get-session-data', value: value[key] });
+        send_runtime_message({ action: 'response-popup-get-session-data', value: value[key] });
       });
       break;
     case "popup-remove-session-data":
@@ -32,6 +32,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       break;
     case "store-dynalist-config":
       chrome_local_store_data("config", request.value);
+      break;
+    case 'validate-token':
+      validateToken(request.value, (response) => {
+        send_runtime_message({
+          action: 'response-validate-token',
+          value: response,
+        });
+      })
       break;
     default:
       break;
@@ -45,7 +53,7 @@ const get_dynalist_config = (callback) => {
   })
 }
 
-const send_runtime_message = (tab_id, value) => {
+const send_runtime_message = (value) => {
   chrome.runtime.sendMessage(value, (response) => {
     console.log("send_runtime_message: response = " + response);
   });

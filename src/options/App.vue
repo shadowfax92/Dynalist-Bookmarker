@@ -55,7 +55,6 @@
 </template>
 
 <script>
-import { validateToken } from '../utils/dynalist'
 
 export default {
   data() {
@@ -89,16 +88,31 @@ export default {
       }
     },
   },
+  mounted() {
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      switch (request.action) {
+        case 'response-validate-token':
+          if (request.value !== undefined) {
+            let response = request.value
+            this.isValidToken = response.success
+            this.showTokenResponse = true
+
+            if (this.isValidToken) {
+              this.extractDynalistDocuments(response.value['files'])
+            }
+          }
+          break
+        default:
+          break
+      }
+    })
+  },
   methods: {
     onApiTokenChange: function() {
       console.log('Api token changed to ' + this.api_token)
-      validateToken(this.api_token, response => {
-        this.isValidToken = response.success
-        this.showTokenResponse = true
-
-        if (this.isValidToken) {
-          this.extractDynalistDocuments(response.value['files'])
-        }
+      chrome.runtime.sendMessage({
+        action: 'validate-token',
+        value: this.api_token,
       })
     },
     onSave: function() {

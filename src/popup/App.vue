@@ -70,11 +70,11 @@ export default {
     }
   },
   mounted() {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      switch (message.action) {
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      switch (request.action) {
         case 'response-popup-get-session-data':
-          if (message.value !== undefined) {
-            this.setPageData(message.value)
+          if (request.value !== undefined) {
+            this.setPageData(request.value)
           }
           break
         default:
