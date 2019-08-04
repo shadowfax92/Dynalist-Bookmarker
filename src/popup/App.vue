@@ -74,8 +74,8 @@ export default {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       switch (request.action) {
         case 'response-popup-get-session-data':
-          if (request.value !== undefined) {
-            this.setPageData(request.value)
+          if (request.data !== undefined) {
+            this.setPageData(request.data)
           }
           break
         default:
@@ -89,10 +89,14 @@ export default {
       this.bookmark_url = activeTab.url
       this.page_url = activeTab.url
 
-      chrome.runtime.sendMessage(
-        { action: 'popup-get-session-data', key: this.page_url },
-        response => {}
-      )
+      let message = {
+        action: 'popup-get-session-data',
+        data: {
+          key: this.page_url,
+        },
+      }
+
+      chrome.runtime.sendMessage(message, response => {})
     })
   },
   methods: {
@@ -100,7 +104,6 @@ export default {
       chrome.runtime.sendMessage(
         { action: 'send-to-dynalist', data: this.getPageData() },
         response => {
-          console.log(request.action)
           this.closePopup()
         }
       )
@@ -140,8 +143,10 @@ export default {
       chrome.runtime.sendMessage(
         {
           action: 'popup-store-session-data',
-          key: this.page_url,
-          value: this.getPageData(),
+          data: {
+            key: this.page_url,
+            value: this.getPageData(),
+          },
         },
         response => {
           console.log(request.action)
@@ -152,10 +157,12 @@ export default {
       chrome.runtime.sendMessage(
         {
           action: 'popup-remove-session-data',
-          key: this.page_url,
+          data: {
+            key: this.page_url,
+          },
         },
         response => {
-          console.log(request.action)
+          console.log(response.action)
         }
       )
     },

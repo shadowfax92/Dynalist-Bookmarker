@@ -5,7 +5,12 @@ import {
   FetchAllDocuments
 } from '../utils/dynalist'
 
-import type { DynalistConfig } from '../utils/interfaces'
+import type {
+  DynalistConfig,
+  EventMessage,
+  DynalistBookmark,
+  CallbackResponse
+} from '../utils/interfaces'
 
 // OnInstall handler
 chrome.runtime.onInstalled.addListener(details => {
@@ -15,11 +20,12 @@ chrome.runtime.onInstalled.addListener(details => {
 })
 
 chrome.runtime.onMessage.addListener(
-  (request: any, sender: any, sendResponse: Function) => {
+  (request: EventMessage, sender: any, sendResponse: Function) => {
+    let data: any = request.data
     switch (request.action) {
       case 'send-to-dynalist':
-        get_dynalist_config(response => {
-          let dynalist_config = response.value
+        get_dynalist_config((response: CallbackResponse) => {
+          let dynalist_config: DynalistConfig = (response.data: any)
           SendToDynalist(dynalist_config, request.data)
         })
 
@@ -28,31 +34,33 @@ chrome.runtime.onMessage.addListener(
         // sendResponse({ action: "saved" });
         break
       case 'popup-store-session-data':
-        chrome_local_store_data(request.key, request.value)
+        chrome_local_store_data(data['key'], data['value'])
         break
       case 'popup-get-session-data':
-        let key = request.key
-
-        chrome_local_get_data(request.key, value => {
-          send_runtime_message({
+        chrome_local_get_data(data['key'], (result: CallbackResponse) => {
+          let popup_session_data_response: EventMessage = {
             action: 'response-popup-get-session-data',
-            value: value[key]
-          })
+            data: result.data,
+            status: true
+          }
+          send_runtime_message(popup_session_data_response)
         })
         break
       case 'popup-remove-session-data':
-        chrome_local_remove_data(request.key)
+        chrome_local_remove_data(data['key'])
         break
       case 'store-dynalist-config':
-        let config: DynalistConfig = request.data
+        let config: DynalistConfig = (data: any)
         chrome_local_store_data('config', config)
         break
       case 'validate-token':
-        ValidateToken(request.value, response => {
-          send_runtime_message({
+        ValidateToken(data, result => {
+          let validate_token_reponse: EventMessage = {
             action: 'response-validate-token',
-            value: response
-          })
+            data: result,
+            status: true
+          }
+          send_runtime_message(validate_token_reponse)
         })
         break
       default:
@@ -69,8 +77,13 @@ const open_settings = () => {
 }
 
 const get_dynalist_config = callback => {
-  chrome_local_get_data('config', value => {
-    callback({ value: value['config'] })
+  chrome_local_get_data('config', (result: CallbackResponse) => {
+    let response: CallbackResponse = {
+      status: result.status,
+      data: (result.data: any)
+    }
+
+    callback(response)
   })
 }
 
@@ -89,8 +102,20 @@ const chrome_local_store_data = (key, value) => {
 
 const chrome_local_get_data = (key, callback) => {
   // let value = window.sessionStorage.getItem(key);
-  chrome.storage.local.get(key, value => {
-    callback(value)
+  chrome.storage.local.get(key, key_value => {
+    if (key_value) {
+      let response: CallbackResponse = {
+        status: true,
+        data: key_value[key]
+      }
+      callback(response)
+    } else {
+      let response: CallbackResponse = {
+        status: false,
+        data: undefined
+      }
+      callback(response)
+    }
   })
 }
 

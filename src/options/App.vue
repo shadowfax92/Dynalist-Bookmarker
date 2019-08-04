@@ -92,8 +92,8 @@ export default {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       switch (request.action) {
         case 'response-validate-token':
-          if (request.value !== undefined) {
-            let response = request.value
+          if (request.data !== undefined) {
+            let response = request.data
             this.isValidToken = response.success
             this.showTokenResponse = true
 
@@ -112,7 +112,7 @@ export default {
       console.log('Api token changed to ' + this.api_token)
       chrome.runtime.sendMessage({
         action: 'validate-token',
-        value: this.api_token,
+        data: this.api_token,
       })
     },
     onSave: function() {
