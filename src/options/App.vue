@@ -92,13 +92,13 @@ export default {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       switch (request.action) {
         case 'response-validate-token':
-          if (request.data !== undefined) {
-            let response = request.data
-            this.isValidToken = response.success
+          this.isValidToken = request.status
+          if (request.data) {
+            let result = request.data
             this.showTokenResponse = true
 
             if (this.isValidToken) {
-              this.extractDynalistDocuments(response.value['files'])
+              this.extractDynalistDocuments(result['files'])
             }
           }
           break

@@ -3,14 +3,14 @@
 export type DynalistBookmark = {
   title: string,
   url: string,
-  tags: Array<string>,
-  note: string,
+  tags: string,
+  notes: string,
 }
 
 export type EventMessage = {
   status: boolean,
   action: string,
-  data?: any,
+  data?: { [key: string]: any } | any,
 }
 
 export type DynalistConfig = {
@@ -22,5 +22,7 @@ export type DynalistConfig = {
 
 export type CallbackResponse = {
     status?: boolean,
-    data?: any | typeof(undefined),
+    data?:  {[key: string]: any} | any,
 }
+
+export type Callback = (response: CallbackResponse) => any

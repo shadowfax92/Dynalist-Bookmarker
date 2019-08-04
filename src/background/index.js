@@ -26,7 +26,12 @@ chrome.runtime.onMessage.addListener(
       case 'send-to-dynalist':
         get_dynalist_config((response: CallbackResponse) => {
           let dynalist_config: DynalistConfig = (response.data: any)
-          SendToDynalist(dynalist_config, request.data)
+          let bookmark_object: DynalistBookmark = (request.data: any)
+          SendToDynalist(
+            dynalist_config,
+            bookmark_object,
+            (response: CallbackResponse) => {}
+          )
         })
 
         // response is not sent back to popup.js as it's not doesn't have a tab-id.
@@ -54,11 +59,15 @@ chrome.runtime.onMessage.addListener(
         chrome_local_store_data('config', config)
         break
       case 'validate-token':
-        ValidateToken(data, result => {
+        let dynalist_config: DynalistConfig = {
+          api_token: data,
+          document_id: ''
+        }
+        ValidateToken(dynalist_config, (result: CallbackResponse) => {
           let validate_token_reponse: EventMessage = {
             action: 'response-validate-token',
-            data: result,
-            status: true
+            data: result.data,
+            status: result.status !== undefined ? result.status : true
           }
           send_runtime_message(validate_token_reponse)
         })

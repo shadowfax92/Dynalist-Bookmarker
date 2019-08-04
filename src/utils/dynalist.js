@@ -1,5 +1,10 @@
 // @flow
-import type { DynalistConfig } from './interfaces'
+import type {
+  DynalistConfig,
+  DynalistBookmark,
+  Callback,
+  CallbackResponse
+} from './interfaces'
 
 const axios = require('axios')
 
@@ -10,18 +15,17 @@ const DYNALIST_APIS = {
 
 const SendToDynalist = (
   config: DynalistConfig,
-  bookmarks_object: any,
-  callback: Function
+  bookmark: DynalistBookmark,
+  callback: Callback
 ) => {
-  let dynalist_title =
-    '[' + bookmarks_object.title + '](' + bookmarks_object.url + ')'
+  let dynalist_title = '[' + bookmark.title + '](' + bookmark.url + ')'
   let dynalist_note = ''
-  if (bookmarks_object.tags !== '') {
-    dynalist_title += ' ' + bookmarks_object.tags
+  if (bookmark.tags !== '') {
+    dynalist_title += ' ' + bookmark.tags
   }
 
-  if (bookmarks_object.notes !== '') {
-    dynalist_note = bookmarks_object.notes
+  if (bookmark.notes !== '') {
+    dynalist_note = bookmark.notes
   }
   dynalist_insert_api(
     config.api_token,
@@ -33,15 +37,16 @@ const SendToDynalist = (
   )
 }
 
-const ValidateToken = (api_token: string, callback: Function) => {
-  dynalist_list_api(api_token, callback)
+const ValidateToken = (config: DynalistConfig, callback: Callback) => {
+  dynalist_list_api(config.api_token, callback)
 }
 
-const FetchAllDocuments = (api_token: string, callback: Function) => {
-  dynalist_list_api(api_token, response => {
+const FetchAllDocuments = (config: DynalistConfig, callback: Callback) => {
+  dynalist_list_api(config.api_token, (response: CallbackResponse) => {
     let documents = []
-    if (response.success) {
-      let files = response.data['files']
+    if (response.status) {
+      let data: any = response.data
+      let files = data['files']
       files.forEach(node => {
         if (node['type'] == 'document') {
           let document = {
@@ -52,9 +57,10 @@ const FetchAllDocuments = (api_token: string, callback: Function) => {
         }
       })
     }
-    callback({
-      value: documents
-    })
+    let result: CallbackResponse = {
+      data: documents,
+    }
+    callback(result)
   })
 }
 
@@ -64,7 +70,7 @@ const dynalist_insert_api = (
   parent_id,
   title,
   note,
-  callback
+  callback: Callback
 ) => {
   let body = {
     token: api_token,
@@ -87,7 +93,7 @@ const dynalist_insert_api = (
   })
 }
 
-const dynalist_list_api = (api_token, callback) => {
+const dynalist_list_api = (api_token: string, callback: Callback) => {
   let body = {
     token: api_token
   }
@@ -98,19 +104,19 @@ const dynalist_list_api = (api_token, callback) => {
   })
 }
 
-const dynalist_response_parser = response => {
-  let status = {}
+const dynalist_response_parser = (response: any): CallbackResponse => {
+  let result: CallbackResponse = {}
   if (response.status == '200') {
     if (response.data !== undefined && response.data['_code'] == 'Ok') {
-      status['success'] = true
-      status['value'] = response.data
+      result.status = true
+      result.data = response.data
     } else {
-      status['success'] = false
+      result.status = false
     }
   } else {
-    status['success'] = false
+    result.status = false
   }
-  return status
+  return result
 }
 
 export { SendToDynalist, ValidateToken, FetchAllDocuments }
