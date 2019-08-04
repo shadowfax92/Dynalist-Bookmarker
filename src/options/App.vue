@@ -119,15 +119,14 @@ export default {
       let config = {
         api_token: this.api_token,
         is_inbox: this.bookmarkLocation.is_inbox,
-        bookmark_note_id: this.bookmarkLocation.id,
+        document_id: this.bookmarkLocation.id,
       }
-      chrome.runtime.sendMessage(
-        {
-          action: 'store-dynalist-config',
-          value: config,
-        },
-        response => {}
-      )
+
+      let eventMessage = {
+        action: 'store-dynalist-config',
+        data: config,
+      }
+      chrome.runtime.sendMessage(eventMessage, response => {})
       window.close()
     },
     onCancel: function() {
