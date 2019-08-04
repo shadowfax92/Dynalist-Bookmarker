@@ -56,6 +56,7 @@
 </template>
 
 <script>
+//@flow
 import { request } from 'http'
 
 export default {

@@ -1,3 +1,4 @@
+//@flow
 import { SendToDynalist, ValidateToken, FetchAllDocuments } from '../utils/dynalist'
 
 // OnInstall handler
@@ -7,7 +8,7 @@ chrome.runtime.onInstalled.addListener(details => {
   }
 });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request: any, sender: any, sendResponse: Function) => {
   switch (request.action) {
     case "send-to-dynalist":
       get_dynalist_config((response) => {
@@ -82,9 +83,9 @@ const chrome_local_get_data = (key, callback) => {
 
 const chrome_local_remove_data = (key) => {
   chrome.storage.local.remove(key, () => {
-    var error = chrome.runtime.lastError;
-    if (error) {
-      console.error("chrome_local_remove_data" + error);
+    let error = chrome.runtime.lastError;
+    if (error.message) {
+      console.error("chrome_local_remove_data" + error.message);
     }
   });
 };

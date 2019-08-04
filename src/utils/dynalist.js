@@ -1,3 +1,4 @@
+//@flow
 const axios = require('axios');
 
 const DYNALIST_APIS = {
@@ -5,7 +6,7 @@ const DYNALIST_APIS = {
     list: 'https://dynalist.io/api/v1/file/list',
 }
 
-const SendToDynalist = (config, bookmarks_object, callback) => {
+const SendToDynalist = (config: any, bookmarks_object: any, callback: Function) => {
     let dynalist_title = '[' + bookmarks_object.title + '](' + bookmarks_object.url + ')'
     let dynalist_note = '';
     if (bookmarks_object.tags !== '') {
@@ -18,11 +19,11 @@ const SendToDynalist = (config, bookmarks_object, callback) => {
     dynalist_insert_api(config.api_token, config.bookmark_note_id, 'root', dynalist_title, dynalist_note, callback);
 }
 
-const ValidateToken = (api_token, callback) => {
+const ValidateToken = (api_token: string, callback: Function) => {
     dynalist_list_api(api_token, callback)
 }
 
-const FetchAllDocuments = (api_token, callback) => {
+const FetchAllDocuments = (api_token: string, callback: Function) => {
     dynalist_list_api(api_token, (response) => {
         let documents = [];
         if (response.success) {
