@@ -13,6 +13,7 @@
           placeholder="Paste the API token"
           v-model="api_token"
           v-on:change="onApiTokenChange()"
+          v-on:keyup.enter="onApiTokenChange()"
         />
         <div class="rows" v-if="showTokenResponse">
           <span v-if="isValidationSuccessful">Is a valid token. Hurray! 🎉</span>
