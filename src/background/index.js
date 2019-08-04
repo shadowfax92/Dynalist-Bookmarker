@@ -1,4 +1,4 @@
-import { addToBookmarks, validateToken, fetchDocuments } from '../utils/dynalist'
+import { SendToDynalist, ValidateToken, FetchAllDocuments } from '../utils/dynalist'
 
 // OnInstall handler
 chrome.runtime.onInstalled.addListener(details => {
@@ -12,7 +12,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case "send-to-dynalist":
       get_dynalist_config((response) => {
         let dynalist_config = response.value;
-        addToBookmarks(dynalist_config, request.data);
+        SendToDynalist(dynalist_config, request.data);
       })
 
       // response is not sent back to popup.js as it's not doesn't have a tab-id.
@@ -36,7 +36,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       chrome_local_store_data("config", request.value);
       break;
     case 'validate-token':
-      validateToken(request.value, (response) => {
+      ValidateToken(request.value, (response) => {
         send_runtime_message({
           action: 'response-validate-token',
           value: response,

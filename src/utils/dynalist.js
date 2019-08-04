@@ -5,7 +5,7 @@ const DYNALIST_APIS = {
     list: 'https://dynalist.io/api/v1/file/list',
 }
 
-const addToBookmarks = (config, bookmarks_object, callback) => {
+const SendToDynalist = (config, bookmarks_object, callback) => {
     let dynalist_title = '[' + bookmarks_object.title + '](' + bookmarks_object.url + ')'
     let dynalist_note = '';
     if (bookmarks_object.tags !== '') {
@@ -18,11 +18,11 @@ const addToBookmarks = (config, bookmarks_object, callback) => {
     dynalist_insert_api(config.api_token, config.bookmark_note_id, 'root', dynalist_title, dynalist_note, callback);
 }
 
-const validateToken = (api_token, callback) => {
+const ValidateToken = (api_token, callback) => {
     dynalist_list_api(api_token, callback)
 }
 
-const fetchDocuments = (api_token, callback) => {
+const FetchAllDocuments = (api_token, callback) => {
     dynalist_list_api(api_token, (response) => {
         let documents = [];
         if (response.success) {
@@ -95,7 +95,7 @@ const dynalist_response_parser = (response) => {
 }
 
 export {
-    addToBookmarks,
-    validateToken,
-    fetchDocuments
+    SendToDynalist,
+    ValidateToken,
+    FetchAllDocuments
 }
