@@ -23,7 +23,7 @@
         </div>
         <br />
         <span class="rows">
-          <b class="privacy">PRIVACY:</b>Note, the token is never upload and is only accessible on this browser.
+          <b class="privacy">PRIVACY:</b> Note, the token is never upload and is only accessible on this browser.
         </span>
       </div>
       <div class="box" v-if="showBookmarksSelectionBox">
@@ -148,6 +148,7 @@ export default {
       this.defaultBookmarkLocationSelected = true
     },
     extractDynalistDocuments: function(dynalist_nodes) {
+      // TODO: release this with fetch api.
       console.log(dynalist_nodes)
       let documents = []
       dynalist_nodes.forEach(node => {

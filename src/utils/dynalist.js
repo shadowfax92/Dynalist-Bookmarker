@@ -10,7 +10,8 @@ const axios = require('axios')
 
 const DYNALIST_APIS = {
   edit: 'https://dynalist.io/api/v1/doc/edit',
-  list: 'https://dynalist.io/api/v1/file/list'
+  list: 'https://dynalist.io/api/v1/file/list',
+  inbox_add: 'https://dynalist.io/api/v1/inbox/add'
 }
 
 const SendToDynalist = (
@@ -27,14 +28,24 @@ const SendToDynalist = (
   if (bookmark.notes !== '') {
     dynalist_note = bookmark.notes
   }
-  dynalist_insert_api(
-    config.api_token,
-    config.document_id,
-    'root',
-    dynalist_title,
-    dynalist_note,
-    callback
-  )
+
+  if (config.is_inbox) {
+    dynalist_insert_inbox(
+      config.api_token,
+      dynalist_title,
+      dynalist_note,
+      callback
+    )
+  } else {
+    dynalist_insert_api(
+      config.api_token,
+      config.document_id,
+      'root',
+      dynalist_title,
+      dynalist_note,
+      callback
+    )
+  }
 }
 
 const ValidateToken = (config: DynalistConfig, callback: Callback) => {
@@ -58,7 +69,7 @@ const FetchAllDocuments = (config: DynalistConfig, callback: Callback) => {
       })
     }
     let result: CallbackResponse = {
-      data: documents,
+      data: documents
     }
     callback(result)
   })
@@ -104,10 +115,31 @@ const dynalist_list_api = (api_token: string, callback: Callback) => {
   })
 }
 
+const dynalist_insert_inbox = (
+  api_token: string,
+  title: string,
+  note: string,
+  callback: Callback
+) => {
+  let body = {
+    token: api_token,
+    index: 0,
+    content: title,
+    note: note
+  }
+
+  axios.post(DYNALIST_APIS.inbox_add, body).then(response => {
+    if (callback !== undefined) {
+      callback(dynalist_response_parser(response))
+    }
+  })
+}
+
 const dynalist_response_parser = (response: any): CallbackResponse => {
   let result: CallbackResponse = {}
   if (response.status == '200') {
-    if (response.data !== undefined && response.data['_code'] == 'Ok') {
+    let response_code = response.data['_code'].toLowerCase()
+    if (response.data !== undefined && response_code == 'ok') {
       result.status = true
       result.data = response.data
     } else {
