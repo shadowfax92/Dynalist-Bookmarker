@@ -68,6 +68,7 @@ export default {
       bookmark_tags: '',
       bookmark_notes: '',
       page_url: '',
+      dynalist_config: null,
     }
   },
   mounted() {
@@ -78,11 +79,23 @@ export default {
             this.setPageData(request.data)
           }
           break
+        case 'response-dynalist-config':
+          if (request.status) {
+            this.dynalist_config = request.data
+            this.redirectToConfigureIfRequired()
+          }
         default:
           break
       }
     })
 
+    // get dynalist config
+    let get_config = {
+      action: 'get-config',
+    }
+    chrome.runtime.sendMessage(get_config, response => {})
+
+    // get popup old session data if any.
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
       var activeTab = tabs[0]
       this.bookmark_title = activeTab.title
@@ -165,6 +178,18 @@ export default {
           console.log(response.action)
         }
       )
+    },
+    redirectToConfigureIfRequired: function() {
+      if (
+        this.dynalist_config === undefined ||
+        this.dynalist_config.api_token === undefined ||
+        (this.is_inbox == false && this.document_id === undefined)
+      ) {
+        let show_settings_message = {
+          action: 'redirect-to-settings',
+        }
+        chrome.runtime.sendMessage(show_settings_message, response => {})
+      }
     },
   },
 }

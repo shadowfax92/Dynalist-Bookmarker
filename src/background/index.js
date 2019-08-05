@@ -23,6 +23,21 @@ chrome.runtime.onMessage.addListener(
   (request: EventMessage, sender: any, sendResponse: Function) => {
     let data: any = request.data
     switch (request.action) {
+      case 'get-config':
+        get_dynalist_config((response: CallbackResponse) => {
+          let dynalist_config: DynalistConfig = (response.data: any)
+          let response_to_get_config: EventMessage = {
+            action: 'response-dynalist-config',
+            data: dynalist_config,
+            status: true,
+          }
+
+          send_runtime_message(response_to_get_config)
+        })
+        break
+      case 'redirect-to-settings':
+        open_settings()
+        break
       case 'send-to-dynalist':
         get_dynalist_config((response: CallbackResponse) => {
           let dynalist_config: DynalistConfig = (response.data: any)
