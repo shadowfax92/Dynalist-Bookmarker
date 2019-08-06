@@ -76,7 +76,9 @@ chrome.runtime.onMessage.addListener(
       case 'validate-token':
         let dynalist_config: DynalistConfig = {
           api_token: data,
-          document_id: ''
+          document_id: '',
+          document_name: '',
+          is_inbox: false,
         }
         ValidateToken(dynalist_config, (result: CallbackResponse) => {
           let validate_token_reponse: EventMessage = {

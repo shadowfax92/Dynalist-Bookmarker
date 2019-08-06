@@ -16,8 +16,9 @@ export type EventMessage = {
 export type DynalistConfig = {
   api_token: string,
   document_id: string,
+  document_name: string,
   parent_id?: string,
-  is_inbox?: boolean,
+  is_inbox: boolean,
 }
 
 export type CallbackResponse = {

@@ -150,6 +150,7 @@ export default {
         api_token: this.api_token,
         is_inbox: this.bookmarkLocation.is_inbox,
         document_id: this.bookmarkLocation.id,
+        document_name: this.bookmarkLocation.text
       }
 
       let eventMessage = {
@@ -173,7 +174,7 @@ export default {
       console.log(caller)
       if (caller == 'inbox' && this.isInboxCheckboxChecked) {
         this.bookmarkLocation.is_inbox = true
-        this.bookmarkLocation.text = 'Inbox'
+        this.bookmarkLocation.text = 'Send to Inbox'
         this.bookmarkDropdownSelected = undefined
       } else if (caller == 'dropdown' || this.isInboxCheckboxChecked == false) {
         this.bookmarkLocation.is_inbox = false
