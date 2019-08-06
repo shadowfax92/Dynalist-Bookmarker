@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener(
           let response_to_get_config: EventMessage = {
             action: 'response-dynalist-config',
             data: dynalist_config,
-            status: true,
+            status: true
           }
 
           send_runtime_message(response_to_get_config)
@@ -37,6 +37,25 @@ chrome.runtime.onMessage.addListener(
         break
       case 'redirect-to-settings':
         open_settings()
+        break
+      case 'fetch-all-documents':
+        get_dynalist_config((response: CallbackResponse) => {
+          let dynalist_config: DynalistConfig = (response.data: any)
+          FetchAllDocuments(
+            dynalist_config,
+            (fetch_documents_response: CallbackResponse) => {
+              let result_response: EventMessage = {
+                action: 'response-fetch-documents',
+                data: fetch_documents_response.data,
+                status: fetch_documents_response.status
+                  ? fetch_documents_response.status
+                  : true
+              }
+
+              send_runtime_message(result_response)
+            }
+          )
+        })
         break
       case 'send-to-dynalist':
         get_dynalist_config((response: CallbackResponse) => {
@@ -78,7 +97,7 @@ chrome.runtime.onMessage.addListener(
           api_token: data,
           document_id: '',
           document_name: '',
-          is_inbox: false,
+          is_inbox: false
         }
         ValidateToken(dynalist_config, (result: CallbackResponse) => {
           let validate_token_reponse: EventMessage = {

@@ -5,20 +5,20 @@
     </div>
 
     <div class="container">
-      <div class="message-box" v-if="display_flags.show_message_box">
+      <div class="message-box" v-if="flags.show_message_box">
         <div>
-          <img class="message-icon" v-bind:src="messages.display_icon"/>
+          <img class="message-icon" v-bind:src="messages.display_icon" />
         </div>
         <p>{{ messages.display_text }}</p>
       </div>
-      <div class="popup" v-if="display_flags.show_popup">
+      <div class="popup" v-if="flags.show_popup">
         <div>
           <label class="rows">Title</label>
           <input
             class="rows"
             type="text"
             placeholder="Title of the bookmark"
-            v-model="bookmark_title"
+            v-model="bookmark.title"
             v-on:change="onChange()"
           />
         </div>
@@ -28,7 +28,7 @@
             class="rows"
             type="url"
             placeholder="Url"
-            v-model="bookmark_url"
+            v-model="bookmark.url"
             v-on:change="onChange()"
           />
         </div>
@@ -38,7 +38,7 @@
             class="rows"
             type="text"
             placeholder="Tags. Ex, #read"
-            v-model="bookmark_tags"
+            v-model="bookmark.tags"
             v-on:change="onChange()"
           />
         </div>
@@ -48,9 +48,19 @@
             class="rows"
             type="text"
             placeholder="Any notes"
-            v-model="bookmark_notes"
+            v-model="bookmark.notes"
             v-on:change="onChange()"
           ></textarea>
+        </div>
+        <div v-if="files.show_files_dropdown">
+          <label class="rows">Folder</label>
+          <select v-model="files.selected" @change="onConfigOverride()" class="rows">
+            <option
+              v-for="file in files.files_list"
+              v-bind:key="file.id"
+              v-bind:value="file"
+            >{{ file.title }}</option>
+          </select>
         </div>
         <div class="button-container">
           <button class="myButtonSave" v-on:click="onSubmit">Save</button>
@@ -70,15 +80,18 @@ export default {
   data() {
     return {
       app_title: 'Dynalist Bookmarker',
-      bookmark_title: '',
-      bookmark_url: '',
-      bookmark_tags: '',
-      bookmark_notes: '',
-      page_url: '',
+      bookmark: {
+        title: '',
+        url: '',
+        notes: '',
+        tags: '',
+        config_override: {},
+      },
       dynalist_config: null,
-      display_flags: {
+      flags: {
         show_popup: true,
         show_message_box: false,
+        is_config_overriden: false,
       },
       messages: {
         display_text: '',
@@ -90,7 +103,17 @@ export default {
         settings: {
           text: 'Need to configure app before using!',
           icon: 'assets/images/settings-icon.png',
-        }
+        },
+      },
+      files: {
+        files_list: [],
+        selected: '',
+        send_to_inbox_config: {
+          title: 'Send to Inbox',
+          id: 'sendtoInboxId',
+          is_inbox: true,
+        },
+        show_files_dropdown: false,
       },
     }
   },
@@ -105,7 +128,48 @@ export default {
         case 'response-dynalist-config':
           if (request.status) {
             this.dynalist_config = request.data
+
+            // get list of files for dropdown
+            if (this.dynalist_config) {
+              let get_files = {
+                action: 'fetch-all-documents',
+              }
+              chrome.runtime.sendMessage(get_files, response => {})
+            }
+
             this.redirectToConfigureIfRequired()
+          }
+          break
+        case 'response-fetch-documents':
+          if (request.status) {
+            let dynalist_documents = request.data
+            this.files.files_list = []
+
+            // populate dropdown model
+            dynalist_documents.forEach(file => {
+              let current_option = {
+                id: file.id,
+                title: file.title,
+                is_inbox: false,
+              }
+              this.files.files_list.push(current_option)
+
+              // selected is the default one configured.
+              if (this.dynalist_config.document_id == file.id) {
+                this.files.selected = current_option
+              }
+            })
+
+            // push inbox
+            this.files.files_list.push(this.files.send_to_inbox_config)
+
+            // if inbox set to inbox
+            if (this.dynalist_config.is_inbox) {
+              this.files.selected = this.files.send_to_inbox_config
+            }
+
+            // display dropdown
+            this.files.show_files_dropdown = true
           }
         default:
           break
@@ -121,8 +185,8 @@ export default {
     // get popup old session data if any.
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
       var activeTab = tabs[0]
-      this.bookmark_title = activeTab.title
-      this.bookmark_url = activeTab.url
+      this.bookmark.title = activeTab.title
+      this.bookmark.url = activeTab.url
       this.page_url = activeTab.url
 
       let message = {
@@ -149,26 +213,33 @@ export default {
     },
     getPageData: function() {
       let data = {
-        title: this.bookmark_title,
-        tags: this.bookmark_tags,
-        notes: this.bookmark_notes,
-        url: this.bookmark_url,
+        title: this.bookmark.title,
+        tags: this.bookmark.tags,
+        notes: this.bookmark.notes,
+        url: this.bookmark.url,
+        config: this.flags.is_config_overriden
+          ? this.bookmark.config_override
+          : null,
       }
       return data
     },
     setPageData: function(data) {
       if (data.title != '') {
-        this.bookmark_title = data.title
+        this.bookmark.title = data.title
       }
       if (data.url != '') {
-        this.bookmark_url = data.url
+        this.bookmark.url = data.url
       }
       if (data.tags != '') {
-        this.bookmark_tags = data.tags
+        this.bookmark.tags = data.tags
       }
       if (data.notes != '') {
-        this.bookmark_notes = data.notes
+        this.bookmark.notes = data.notes
       }
+
+      // not setting config_override on purpose.
+      // don't want to save the state of dynalist as
+      // document might delete or change or what not.
     },
     onCancel: function() {
       this.clearSavedData()
@@ -193,6 +264,18 @@ export default {
           console.log(request.action)
         }
       )
+    },
+    onConfigOverride: function() {
+      if (this.files.selected.id != this.dynalist_config.document_id) {
+        this.flags.is_config_overriden = true
+
+        this.bookmark.config_override = {
+          document_id: this.files.selected.id,
+          is_inbox: this.files.selected.is_inbox,
+        }
+      } else {
+        this.flags.is_config_overriden = false
+      }
     },
     clearSavedData: function() {
       chrome.runtime.sendMessage(
@@ -219,7 +302,7 @@ export default {
         }
         setTimeout(() => {
           chrome.runtime.sendMessage(show_settings_message, response => {})
-        }, 2000);
+        }, 2000)
       }
     },
     showMessage: function(message_type) {
@@ -229,16 +312,17 @@ export default {
           this.messages.display_icon = this.messages.success.icon
           break
         case 'settings':
-        this.messages.display_text = this.messages.settings.text
+          this.messages.display_text = this.messages.settings.text
           this.messages.display_icon = this.messages.settings.icon
           break
         default:
           break
       }
-      this.display_flags.show_message_box = true
-      this.display_flags.show_popup = false
+      this.flags.show_message_box = true
+      this.flags.show_popup = false
     },
   },
+  watch: {},
 }
 </script>
 

@@ -175,6 +175,7 @@ export default {
       if (caller == 'inbox' && this.isInboxCheckboxChecked) {
         this.bookmarkLocation.is_inbox = true
         this.bookmarkLocation.text = 'Send to Inbox'
+        this.bookmarkLocation.id = 'sendtoInboxId'
         this.bookmarkDropdownSelected = undefined
       } else if (caller == 'dropdown' || this.isInboxCheckboxChecked == false) {
         this.bookmarkLocation.is_inbox = false

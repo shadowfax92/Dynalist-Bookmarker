@@ -6,6 +6,8 @@ import type {
   CallbackResponse
 } from './interfaces'
 
+import { isNullOrUndefined } from './utils'
+
 const axios = require('axios')
 
 const DYNALIST_APIS = {
@@ -29,7 +31,8 @@ const SendToDynalist = (
     dynalist_note = bookmark.notes
   }
 
-  if (config.is_inbox) {
+  // support dynalist config override
+  if (config.is_inbox || (bookmark.config ? bookmark.config.is_inbox : false)) {
     dynalist_insert_inbox(
       config.api_token,
       dynalist_title,
@@ -37,9 +40,13 @@ const SendToDynalist = (
       callback
     )
   } else {
+    let document_id: string = bookmark.config
+      ? bookmark.config.document_id
+      : config.document_id
+
     dynalist_insert_api(
       config.api_token,
-      config.document_id,
+      document_id,
       'root',
       dynalist_title,
       dynalist_note,
@@ -69,6 +76,7 @@ const FetchAllDocuments = (config: DynalistConfig, callback: Callback) => {
       })
     }
     let result: CallbackResponse = {
+      status: response.status,
       data: documents
     }
     callback(result)
