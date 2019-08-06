@@ -5,7 +5,13 @@
     </div>
 
     <div class="container">
-      <div>
+      <div class="message-box" v-if="display_flags.show_message_box">
+        <div>
+          <img class="message-icon" v-bind:src="messages.display_icon"/>
+        </div>
+        <p>{{ messages.display_text }}</p>
+      </div>
+      <div class="popup" v-if="display_flags.show_popup">
         <div>
           <label class="rows">Title</label>
           <input
@@ -46,10 +52,10 @@
             v-on:change="onChange()"
           ></textarea>
         </div>
-      </div>
-      <div class="button-container">
-        <button class="myButtonSave" v-on:click="onSubmit">Save</button>
-        <button class="myButtonCancel" v-on:click="onCancel">Cancel</button>
+        <div class="button-container">
+          <button class="myButtonSave" v-on:click="onSubmit">Save</button>
+          <button class="myButtonCancel" v-on:click="onCancel">Cancel</button>
+        </div>
       </div>
     </div>
   </div>
@@ -58,17 +64,34 @@
 <script>
 //@flow
 import { request } from 'http'
+import { setTimeout } from 'timers'
 
 export default {
   data() {
     return {
-      app_title: 'Bookmarker',
+      app_title: 'Dynalist Bookmarker',
       bookmark_title: '',
       bookmark_url: '',
       bookmark_tags: '',
       bookmark_notes: '',
       page_url: '',
       dynalist_config: null,
+      display_flags: {
+        show_popup: true,
+        show_message_box: false,
+      },
+      messages: {
+        display_text: '',
+        display_icon: '',
+        success: {
+          text: 'Successfully saved!',
+          icon: 'assets/images/check-icon.png',
+        },
+        settings: {
+          text: 'Need to configure app before using!',
+          icon: 'assets/images/settings-icon.png',
+        }
+      },
     }
   },
   mounted() {
@@ -117,9 +140,12 @@ export default {
       chrome.runtime.sendMessage(
         { action: 'send-to-dynalist', data: this.getPageData() },
         response => {
-          this.closePopup()
+          // this.closePopup()
         }
       )
+
+      this.showMessage()
+      this.closePopup(1)
     },
     getPageData: function() {
       let data = {
@@ -148,9 +174,11 @@ export default {
       this.clearSavedData()
       this.closePopup()
     },
-    closePopup: function() {
+    closePopup: function(timeout_seconds = 0) {
       this.clearSavedData()
-      window.close()
+      setTimeout(() => {
+        window.close()
+      }, timeout_seconds * 1000)
     },
     onChange: function() {
       chrome.runtime.sendMessage(
@@ -185,11 +213,30 @@ export default {
         this.dynalist_config.api_token === undefined ||
         (this.is_inbox == false && this.document_id === undefined)
       ) {
+        this.showMessage('settings')
         let show_settings_message = {
           action: 'redirect-to-settings',
         }
-        chrome.runtime.sendMessage(show_settings_message, response => {})
+        setTimeout(() => {
+          chrome.runtime.sendMessage(show_settings_message, response => {})
+        }, 2000);
       }
+    },
+    showMessage: function(message_type) {
+      switch (message_type) {
+        case 'success':
+          this.messages.display_text = this.messages.success.text
+          this.messages.display_icon = this.messages.success.icon
+          break
+        case 'settings':
+        this.messages.display_text = this.messages.settings.text
+          this.messages.display_icon = this.messages.settings.icon
+          break
+        default:
+          break
+      }
+      this.display_flags.show_message_box = true
+      this.display_flags.show_popup = false
     },
   },
 }
@@ -206,6 +253,18 @@ body {
 .container {
   width: 95%;
   margin: 5px;
+}
+
+.message-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+
+  .message-icon {
+    width: 30px;
+    margin-right: 7px;
+  }
 }
 
 .header {

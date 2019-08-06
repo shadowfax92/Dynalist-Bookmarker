@@ -1,56 +1,69 @@
 <template>
   <div>
     <div class="container">
-      <div class="box">
-        <label class="rows">Step-1: Paste Dynalist Token</label>
-        <span class="rows">
-          Please copy and paste the token from
-          <a href="https://dynalist.io/developer">dynalist link.</a>
-        </span>
-        <input
-          class="rows"
-          type="text"
-          placeholder="Paste the API token"
-          v-model="api_token"
-          v-on:change="onApiTokenChange()"
-          v-on:keyup.enter="onApiTokenChange()"
-        />
-        <div class="rows" v-if="showTokenResponse">
-          <span v-if="isValidationSuccessful">Is a valid token. Hurray! 🎉</span>
-          <span
-            v-if="!isValidationSuccessful"
-          >Entered token is invalid 😢. Clear the token and copy-paste the whole thing again.</span>
+      <div class="message-box" v-if="display_flags.show_message_box">
+        <div>
+          <img class="message-icon" v-bind:src="messages.display_icon" alt="Success" />
         </div>
-        <br />
-        <span class="rows">
-          <b class="privacy">PRIVACY:</b> Note, the token is never upload and is only accessible on this browser.
-        </span>
+        <p>{{ messages.display_text }}</p>
       </div>
-      <div class="box" v-if="showBookmarksSelectionBox">
-        <label class="rows">Step-2: Bookmarks location</label>
-        <span class="rows">Please select the location for your bookmarks.</span>
-        <span class="rows">
+      <div v-if="display_flags.show_option">
+        <div class="box">
+          <label class="rows">Step-1: Paste Dynalist Token</label>
+          <span class="rows">
+            Please copy and paste the token from
+            <a
+              href="https://dynalist.io/developer"
+            >dynalist link.</a>
+          </span>
           <input
-            style="width: auto; margin-right: 5px;"
-            type="checkbox"
-            id="send-to-inbox-checkbox"
-            v-model="isInboxCheckboxChecked"
-            @change="onChangeBookmarkSelection('inbox')"
-          />Send to Inbox
-        </span>
-        <label class="rows">OR</label>
-        <select v-model="bookmarkDropdownSelected" @change="onChangeBookmarkSelection('dropdown')">
-          <option
-            v-for="option in options"
-            v-bind:key="option.id"
-            v-bind:value="option"
-          >{{ option.text }}</option>
-        </select>
+            class="rows"
+            type="text"
+            placeholder="Paste the API token"
+            v-model="api_token"
+            v-on:change="onApiTokenChange()"
+            v-on:keyup.enter="onApiTokenChange()"
+          />
+          <div class="rows" v-if="showTokenResponse">
+            <span v-if="isValidationSuccessful">Is a valid token. Hurray! 🎉</span>
+            <span
+              v-if="!isValidationSuccessful"
+            >Entered token is invalid 😢. Clear the token and copy-paste the whole thing again.</span>
+          </div>
+          <br />
+          <span class="rows">
+            <b class="privacy">PRIVACY:</b> Note, the token is never upload and is only accessible on this browser.
+          </span>
+        </div>
+        <div class="box" v-if="showBookmarksSelectionBox">
+          <label class="rows">Step-2: Bookmarks location</label>
+          <span class="rows">Please select the location for your bookmarks.</span>
+          <span class="rows">
+            <input
+              style="width: auto; margin-right: 5px;"
+              type="checkbox"
+              id="send-to-inbox-checkbox"
+              v-model="isInboxCheckboxChecked"
+              @change="onChangeBookmarkSelection('inbox')"
+            />Send to Inbox
+          </span>
+          <label class="rows">OR</label>
+          <select
+            v-model="bookmarkDropdownSelected"
+            @change="onChangeBookmarkSelection('dropdown')"
+          >
+            <option
+              v-for="option in options"
+              v-bind:key="option.id"
+              v-bind:value="option"
+            >{{ option.text }}</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div class="button-container box" v-if="showButtons">
-      <button class="myButtonSave" v-on:click="onSave">Save</button>
-      <button class="myButtonCancel" v-on:click="onCancel">Cancel</button>
+      <div class="button-container box" v-if="showButtons">
+        <button class="myButtonSave" v-on:click="onSave">Save</button>
+        <button class="myButtonCancel" v-on:click="onCancel">Cancel</button>
+      </div>
     </div>
   </div>
 </template>
@@ -71,6 +84,22 @@ export default {
         is_inbox: undefined,
         id: undefined,
         text: undefined,
+      },
+      display_flags: {
+        show_option: true,
+        show_message_box: false,
+      },
+      messages: {
+        display_text: '',
+        display_icon: '',
+        success: {
+          text: 'Saved settings!',
+          icon: 'assets/images/check-icon.png',
+        },
+        cancel: {
+          text: 'Discarding settings',
+          icon: 'assets/images/cancel-icon.png',
+        },
       },
     }
   },
@@ -128,10 +157,17 @@ export default {
         data: config,
       }
       chrome.runtime.sendMessage(eventMessage, response => {})
-      window.close()
+      this.showMessage('success')
+      this.closeOptionsWindow(3)
     },
     onCancel: function() {
-      window.close()
+      this.showMessage('cancel')
+      this.closeOptionsWindow(2)
+    },
+    closeOptionsWindow: function(timeout_seconds = 0) {
+      setTimeout(() => {
+        window.close()
+      }, timeout_seconds * 1000)
     },
     onChangeBookmarkSelection: function(caller) {
       console.log(caller)
@@ -174,6 +210,21 @@ export default {
         })
       })
     },
+    showMessage: function(message_type) {
+      switch (message_type) {
+        case 'success':
+          this.messages.display_text = this.messages.success.text
+          this.messages.display_icon = this.messages.success.icon
+          break
+        case 'cancel':
+          this.messages.display_text = this.messages.cancel.text
+          this.messages.display_icon = this.messages.cancel.icon
+        default:
+          break
+      }
+      this.display_flags.show_message_box = true
+      this.display_flags.show_option = false
+    },
   },
   watch: {
     // api_token: function(old_val, new_val) {
@@ -194,6 +245,18 @@ body {
 .container {
   width: 95%;
   margin: 5px;
+}
+
+.message-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+
+  .message-icon {
+    width: 30px;
+    margin-right: 7px;
+  }
 }
 
 .header {
