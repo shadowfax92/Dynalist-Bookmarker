@@ -29,7 +29,7 @@ export type DynalistConfig = {
 }
 
 export type CallbackResponse = {
-    status?: boolean,
+    status: boolean,
     data?:  {[key: string]: any} | any,
 }
 

@@ -99,10 +99,17 @@ export default {
         success: {
           text: 'Successfully saved!',
           icon: 'assets/images/check-icon.png',
+          timeout: 2,
         },
         settings: {
           text: 'Need to configure app before using!',
           icon: 'assets/images/settings-icon.png',
+          timeout: 2,
+        },
+        failure: {
+          text: 'Oh no, something went wrong when saving!',
+          icon: 'assets/images/sad-emoji-icon.png',
+          timeout: 3,
         },
       },
       files: {
@@ -171,6 +178,18 @@ export default {
             // display dropdown
             this.files.show_files_dropdown = true
           }
+          break
+        case 'send-to-dynalist-response':
+          let save_successful = request.status
+
+          if (save_successful) {
+            this.showMessage('success')
+            this.closePopup(this.messages.success.timeout)
+          } else {
+            this.showMessage('failure')
+            this.closePopup(this.messages.success.timeout)
+          }
+          break
         default:
           break
       }
@@ -207,9 +226,6 @@ export default {
           // this.closePopup()
         }
       )
-
-      this.showMessage()
-      this.closePopup(1)
     },
     getPageData: function() {
       let data = {
@@ -315,6 +331,9 @@ export default {
           this.messages.display_text = this.messages.settings.text
           this.messages.display_icon = this.messages.settings.icon
           break
+        case 'failure':
+          this.messages.display_text = this.messages.failure.text
+          this.messages.display_icon = this.messages.failure.icon
         default:
           break
       }

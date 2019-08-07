@@ -25,19 +25,19 @@
             v-on:keyup.enter="onApiTokenChange()"
           />
           <div class="rows" v-if="showTokenResponse">
-            <span v-if="isValidationSuccessful">Is a valid token. Hurray! 🎉</span>
+            <span v-if="isValidationSuccessful">Entered token is valid. Hurray! 🎉</span>
             <span
               v-if="!isValidationSuccessful"
-            >Entered token is invalid 😢. Clear the token and copy-paste the whole thing again.</span>
+            >Entered token is invalid 😢, clear the token and copy-paste the whole thing again.</span>
           </div>
           <br />
           <span class="rows">
-            <b class="privacy">PRIVACY:</b> Note, the token is never upload and is only accessible on this browser.
+            <b class="privacy">PRIVACY:</b> Note, the token is never upload. It's only used on this device.
           </span>
         </div>
         <div class="box" v-if="showBookmarksSelectionBox">
           <label class="rows">Step-2: Bookmarks location</label>
-          <span class="rows">Please select the location for your bookmarks.</span>
+          <span class="rows">Please select the default location for your bookmarks.</span>
           <span class="rows">
             <input
               style="width: auto; margin-right: 5px;"
@@ -95,10 +95,12 @@ export default {
         success: {
           text: 'Saved settings!',
           icon: 'assets/images/check-icon.png',
+          timeout: 2,
         },
         cancel: {
           text: 'Discarding settings',
           icon: 'assets/images/cancel-icon.png',
+          timeout: 0.3,
         },
       },
     }
@@ -159,11 +161,11 @@ export default {
       }
       chrome.runtime.sendMessage(eventMessage, response => {})
       this.showMessage('success')
-      this.closeOptionsWindow(3)
+      this.closeOptionsWindow(this.messages.success.timeout)
     },
     onCancel: function() {
       this.showMessage('cancel')
-      this.closeOptionsWindow(2)
+      this.closeOptionsWindow(this.messages.cancel.timeout)
     },
     closeOptionsWindow: function(timeout_seconds = 0) {
       setTimeout(() => {

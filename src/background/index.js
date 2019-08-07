@@ -64,7 +64,15 @@ chrome.runtime.onMessage.addListener(
           SendToDynalist(
             dynalist_config,
             bookmark_object,
-            (response: CallbackResponse) => {}
+            (response: CallbackResponse) => {
+              let response_message: EventMessage = {
+                action: 'send-to-dynalist-response',
+                status: response.status,
+                data: response.data
+              }
+
+              send_runtime_message(response_message)
+            }
           )
         })
 
