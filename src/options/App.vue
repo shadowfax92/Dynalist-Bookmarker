@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="container">
-      <div class="message-box" v-if="display_flags.show_message_box">
+      <div class="message-box" v-if="flags.show_message_box">
         <div>
           <img class="message-icon" v-bind:src="messages.display_icon" alt="Success" />
         </div>
         <p>{{ messages.display_text }}</p>
       </div>
-      <div v-if="display_flags.show_option">
+      <div v-if="flags.show_option">
         <div class="box">
           <label class="rows">Step-1: Paste Dynalist Token</label>
           <span class="rows">
@@ -24,7 +24,7 @@
             v-on:change="onApiTokenChange()"
             v-on:keyup.enter="onApiTokenChange()"
           />
-          <div class="rows" v-if="showTokenResponse">
+          <div class="rows" v-if="flags.show_token_response">
             <span v-if="isValidationSuccessful">Entered token is valid. Hurray! 🎉</span>
             <span
               v-if="!isValidationSuccessful"
@@ -43,26 +43,26 @@
               style="width: auto; margin-right: 5px;"
               type="checkbox"
               id="send-to-inbox-checkbox"
-              v-model="isInboxCheckboxChecked"
+              v-model="flags.is_inbox_checkbox_checked"
               @change="onChangeBookmarkSelection('inbox')"
             />Send to Inbox
           </span>
           <label class="rows">OR</label>
           <select
-            v-model="bookmarkDropdownSelected"
+            v-model="bookmark_dropdown_selection"
             @change="onChangeBookmarkSelection('dropdown')"
           >
             <option
               v-for="option in options"
               v-bind:key="option.id"
               v-bind:value="option"
-            >{{ option.text }}</option>
+            >{{ option.title }}</option>
           </select>
         </div>
-      </div>
-      <div class="button-container box" v-if="showButtons">
-        <button class="myButtonSave" v-on:click="onSave">Save</button>
-        <button class="myButtonCancel" v-on:click="onCancel">Cancel</button>
+        <div class="button-container" v-if="showButtons">
+          <button class="myButtonSave" v-on:click="onSave">Save</button>
+          <button class="myButtonCancel" v-on:click="onCancel">Cancel</button>
+        </div>
       </div>
     </div>
   </div>
@@ -73,21 +73,22 @@
 export default {
   data() {
     return {
-      bookmarkDropdownSelected: undefined,
-      isInboxCheckboxChecked: false,
+      bookmark_dropdown_selection: undefined,
       api_token: '',
-      isValidToken: undefined,
-      showTokenResponse: false,
-      defaultBookmarkLocationSelected: false,
       options: [],
-      bookmarkLocation: {
+      existing_config: undefined,
+      current_config: {
         is_inbox: undefined,
         id: undefined,
         text: undefined,
       },
-      display_flags: {
+      flags: {
         show_option: true,
         show_message_box: false,
+        is_inbox_checkbox_checked: false,
+        show_token_response: false,
+        is_valid_token: undefined,
+        bookmark_location_selected: false,
       },
       messages: {
         display_text: '',
@@ -107,13 +108,13 @@ export default {
   },
   computed: {
     showBookmarksSelectionBox: function() {
-      return this.isValidToken
+      return this.flags.is_valid_token
     },
     showButtons: function() {
-      return this.defaultBookmarkLocationSelected && this.isValidToken
+      return this.flags.bookmark_location_selected && this.flags.is_valid_token
     },
     isValidationSuccessful: function() {
-      if (this.isValidToken) {
+      if (this.flags.is_valid_token) {
         return true
       } else {
         return false
@@ -124,35 +125,57 @@ export default {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       switch (request.action) {
         case 'response-validate-token':
-          this.isValidToken = request.status
+          this.flags.is_valid_token = request.status
           if (request.data) {
             let result = request.data
-            this.showTokenResponse = true
+            this.flags.show_token_response = true
 
-            if (this.isValidToken) {
+            if (this.flags.is_valid_token) {
               this.extractDynalistDocuments(result['files'])
             }
+          }
+          break
+        case 'response-dynalist-config':
+          if (request.data) {
+            // config exists. prepopulate with existing config
+            this.populateExistingConfig(request.data)
           }
           break
         default:
           break
       }
     })
+
+    // as soon as mounted check if existing config exists
+    let get_config_event = {
+      action: 'get-config',
+    }
+    chrome.runtime.sendMessage(get_config_event, response => {})
   },
   methods: {
     onApiTokenChange: function() {
-      console.log('Api token changed to ' + this.api_token)
       chrome.runtime.sendMessage({
         action: 'validate-token',
         data: this.api_token,
       })
     },
+    populateExistingConfig: function(config) {
+      this.existing_config = config
+      this.api_token = config.api_token
+      // need to populate bookmark_dropdown_selection as
+      // onChangeBookmarkSelection will be called manually and it requires this data.
+      this.bookmark_dropdown_selection = {}
+      this.bookmark_dropdown_selection.id = config.document_id
+      this.bookmark_dropdown_selection.title = config.document_name
+      this.bookmark_dropdown_selection.is_inbox = config.is_inbox
+      this.onApiTokenChange()
+    },
     onSave: function() {
       let config = {
         api_token: this.api_token,
-        is_inbox: this.bookmarkLocation.is_inbox,
-        document_id: this.bookmarkLocation.id,
-        document_name: this.bookmarkLocation.text
+        is_inbox: this.current_config.is_inbox,
+        document_id: this.current_config.id,
+        document_name: this.current_config.text,
       }
 
       let eventMessage = {
@@ -173,19 +196,21 @@ export default {
       }, timeout_seconds * 1000)
     },
     onChangeBookmarkSelection: function(caller) {
-      console.log(caller)
-      if (caller == 'inbox' && this.isInboxCheckboxChecked) {
-        this.bookmarkLocation.is_inbox = true
-        this.bookmarkLocation.text = 'Send to Inbox'
-        this.bookmarkLocation.id = 'sendtoInboxId'
-        this.bookmarkDropdownSelected = undefined
-      } else if (caller == 'dropdown' || this.isInboxCheckboxChecked == false) {
-        this.bookmarkLocation.is_inbox = false
-        this.isInboxCheckboxChecked = false
-        this.bookmarkLocation.id = this.bookmarkDropdownSelected.id
-        this.bookmarkLocation.text = this.bookmarkDropdownSelected.text
+      if (caller == 'inbox' && this.flags.is_inbox_checkbox_checked) {
+        this.current_config.is_inbox = true
+        this.current_config.text = 'Send to Inbox'
+        this.current_config.id = 'sendtoInboxId'
+        this.bookmark_dropdown_selection = undefined
+      } else if (
+        caller == 'dropdown' ||
+        this.flags.is_inbox_checkbox_checked == false
+      ) {
+        this.current_config.is_inbox = false
+        this.flags.is_inbox_checkbox_checked = false
+        this.current_config.id = this.bookmark_dropdown_selection.id
+        this.current_config.text = this.bookmark_dropdown_selection.text
       }
-      this.defaultBookmarkLocationSelected = true
+      this.flags.bookmark_location_selected = true
     },
     extractDynalistDocuments: function(dynalist_nodes) {
       // TODO: release this with fetch api.
@@ -205,14 +230,33 @@ export default {
     },
     populateOptions: function(documents) {
       this.options = []
-      this.defaultBookmarkLocationSelected = false
+      this.flags.bookmark_location_selected = false
 
       documents.forEach(document => {
-        this.options.push({
-          text: document.title,
+        let current_option = {
+          title: document.title,
           id: document.id,
-        })
+        }
+        this.options.push(current_option)
+
+        // if existing config exists selected the default option.
+        if (
+          this.existing_config &&
+          this.existing_config.document_id == document.id
+        ) {
+          this.bookmark_dropdown_selection = current_option
+        }
       })
+
+      // trigger onchange if existing config exists.
+      if (this.existing_config) {
+        if (this.existing_config.is_inbox) {
+          this.flags.is_inbox_checkbox_checked = true
+          this.onChangeBookmarkSelection('inbox')
+        } else {
+          this.onChangeBookmarkSelection('dropdown')
+        }
+      }
     },
     showMessage: function(message_type) {
       switch (message_type) {
@@ -226,8 +270,8 @@ export default {
         default:
           break
       }
-      this.display_flags.show_message_box = true
-      this.display_flags.show_option = false
+      this.flags.show_message_box = true
+      this.flags.show_option = false
     },
   },
   watch: {
