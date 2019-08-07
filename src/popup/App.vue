@@ -63,8 +63,8 @@
           </select>
         </div>
         <div class="button-container">
-          <button class="myButtonSave" v-on:click="onSubmit">Save</button>
-          <button class="myButtonCancel" v-on:click="onCancel">Cancel</button>
+          <button class="button button-1" v-on:click="onSubmit">Save</button>
+          <button class="button button-1" v-on:click="onCancel">Cancel</button>
         </div>
       </div>
     </div>
@@ -367,6 +367,7 @@ body {
   .message-icon {
     width: 30px;
     margin-right: 7px;
+    box-shadow: none;
   }
 }
 
@@ -375,7 +376,7 @@ body {
   font-size: 15px;
   text-align: center;
   margin-top: 10px;
-  border: 1px solid #79bcff;
+  border: 1px solid #007ee5;
   padding: 5px;
   border-radius: 5px;
 }
@@ -391,14 +392,14 @@ div > input,
 div > textarea {
   width: 100%;
   height: 40px;
-  // border-color: #79bcff;
+  // border-color: #007ee5;
   // border-radius: 5px;
   // border-width: 1px;
 
   border: 0;
   outline: 0;
   background: transparent;
-  border-bottom: 1px solid #79bcff;
+  border-bottom: 1px solid #007ee5;
 }
 
 input:hover,
@@ -414,103 +415,51 @@ input {
   width: 100%;
 }
 
+// .button-container {
+//   margin-top: 10px;
+// }
+
+// buttons new css from https://codepen.io/woolandcotton/pen/mBmLwq
 .button-container {
-  margin-top: 10px;
+  text-align: center;
 }
 
-// generated using - https://www.bestcssbuttongenerator.com/#/1
-.myButtonSave {
-  background: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    color-stop(0.05, #79bbff),
-    color-stop(1, #378de5)
-  );
-  background: -moz-linear-gradient(top, #79bbff 5%, #378de5 100%);
-  background: -webkit-linear-gradient(top, #79bbff 5%, #378de5 100%);
-  background: -o-linear-gradient(top, #79bbff 5%, #378de5 100%);
-  background: -ms-linear-gradient(top, #79bbff 5%, #378de5 100%);
-  background: linear-gradient(to bottom, #79bbff 5%, #378de5 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#378de5',GradientType=0);
-  background-color: #79bbff;
-  -moz-border-radius: 15px;
-  -webkit-border-radius: 15px;
-  border-radius: 15px;
-  display: inline-block;
+.button {
+  width: 100px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+  color: #000;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-top: 20px;
+  margin-left: 30px;
+  margin-bottom: 10px;
   cursor: pointer;
-  color: #ffffff;
-  font-family: Arial;
-  font-size: 12px;
-  padding: 8px 20px;
-  text-decoration: none;
-}
-.myButtonSave:hover {
-  background: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    color-stop(0.05, #378de5),
-    color-stop(1, #79bbff)
-  );
-  background: -moz-linear-gradient(top, #378de5 5%, #79bbff 100%);
-  background: -webkit-linear-gradient(top, #378de5 5%, #79bbff 100%);
-  background: -o-linear-gradient(top, #378de5 5%, #79bbff 100%);
-  background: -ms-linear-gradient(top, #378de5 5%, #79bbff 100%);
-  background: linear-gradient(to bottom, #378de5 5%, #79bbff 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#378de5', endColorstr='#79bbff',GradientType=0);
-  background-color: #378de5;
-}
-.myButtonSave:active {
-  position: relative;
-  top: 1px;
+  display: inline-block;
 }
 
-.myButtonCancel {
-  background: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    color-stop(0.05, #f9f9f9),
-    color-stop(1, #e9e9e9)
-  );
-  background: -moz-linear-gradient(top, #f9f9f9 5%, #e9e9e9 100%);
-  background: -webkit-linear-gradient(top, #f9f9f9 5%, #e9e9e9 100%);
-  background: -o-linear-gradient(top, #f9f9f9 5%, #e9e9e9 100%);
-  background: -ms-linear-gradient(top, #f9f9f9 5%, #e9e9e9 100%);
-  background: linear-gradient(to bottom, #f9f9f9 5%, #e9e9e9 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f9f9f9', endColorstr='#e9e9e9',GradientType=0);
-  background-color: #f9f9f9;
-  -moz-border-radius: 15px;
-  -webkit-border-radius: 15px;
-  border-radius: 15px;
-  display: inline-block;
-  cursor: pointer;
-  color: #666666;
-  font-family: Arial;
-  font-size: 12px;
-  padding: 8px 20px;
-  text-decoration: none;
+.button-1 {
+  background-color: transparent;
+  border: 2px solid #007ee5; //#00d7c3;
+  border-radius: 50px;
+  -webkit-transition: all 0.15s ease-in-out;
+  transition: all 0.15s ease-in-out;
+  color: #007ee5; //#00d7c3;
 }
-.myButtonCancel:hover {
-  background: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    color-stop(0.05, #e9e9e9),
-    color-stop(1, #f9f9f9)
-  );
-  background: -moz-linear-gradient(top, #e9e9e9 5%, #f9f9f9 100%);
-  background: -webkit-linear-gradient(top, #e9e9e9 5%, #f9f9f9 100%);
-  background: -o-linear-gradient(top, #e9e9e9 5%, #f9f9f9 100%);
-  background: -ms-linear-gradient(top, #e9e9e9 5%, #f9f9f9 100%);
-  background: linear-gradient(to bottom, #e9e9e9 5%, #f9f9f9 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e9e9e9', endColorstr='#f9f9f9',GradientType=0);
-  background-color: #e9e9e9;
+.button-1:hover {
+  //box-shadow: 0 0 5px 0 #00d7c3 inset, 0 0 5px 2px #007ee5; // #00d7c3;
+  box-shadow: 0 0 5px 0 #007ee5 inset, 0 0 5px 2px #007ee5; // #00d7c3;
+  border: 2px solid #007ee5; //#00d7c3;
 }
-.myButtonCancel:active {
-  position: relative;
-  top: 1px;
+
+.button:focus {
+  outline: 0;
+}
+
+.button:active {
+  outline: none;
+  border: none;
 }
 </style>
 
