@@ -20,7 +20,6 @@ const config = {
     options: './options/index.js',
     popup: './popup/index.js',
     background: './background/index.js',
-    contentScripts: './contentScripts/index.js'
   },
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -120,8 +119,7 @@ if (isDevMode) {
       entries: {
         background: 'background',
         options: 'options',
-        popup: 'popup',
-        contentScripts: 'contentScripts/index'
+        popup: 'popup'
       }
     })
   )
