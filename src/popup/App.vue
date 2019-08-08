@@ -340,6 +340,9 @@ export default {
       this.flags.show_message_box = true
       this.flags.show_popup = false
     },
+    track () {
+      this.$ga.page('/')
+    }
   },
   watch: {},
 }

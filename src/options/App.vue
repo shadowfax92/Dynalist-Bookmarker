@@ -273,6 +273,9 @@ export default {
       this.flags.show_message_box = true
       this.flags.show_option = false
     },
+    track () {
+      this.$ga.page('/')
+    }
   },
   watch: {
     // api_token: function(old_val, new_val) {

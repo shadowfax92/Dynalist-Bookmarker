@@ -26,5 +26,5 @@
     "tabs"
   ],
   "version": "1.0.0",
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';"
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://www.google-analytics.com;  object-src 'self';"
 }
