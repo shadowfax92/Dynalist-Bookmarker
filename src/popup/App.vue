@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div>
+    <div class="app-header">
+      <div>
+        <img class="message-icon" v-bind:src="app_icon" />
+      </div>
       <h2 class="header">{{ app_title }}</h2>
     </div>
 
@@ -75,11 +78,13 @@
 //@flow
 import { request } from 'http'
 import { setTimeout } from 'timers'
+import { page } from 'vue-analytics'
 
 export default {
   data() {
     return {
       app_title: 'Dynalist Bookmarker',
+      app_icon: 'assets/icons/icon_512.png',
       bookmark: {
         title: '',
         url: '',
@@ -217,6 +222,7 @@ export default {
 
       chrome.runtime.sendMessage(message, response => {})
     })
+    this.track()
   },
   methods: {
     onSubmit: function() {
@@ -276,9 +282,7 @@ export default {
             value: this.getPageData(),
           },
         },
-        response => {
-          console.log(request.action)
-        }
+        response => {}
       )
     },
     onConfigOverride: function() {
@@ -301,9 +305,7 @@ export default {
             key: this.page_url,
           },
         },
-        response => {
-          console.log(response.action)
-        }
+        response => {}
       )
     },
     redirectToConfigureIfRequired: function() {
@@ -340,9 +342,13 @@ export default {
       this.flags.show_message_box = true
       this.flags.show_popup = false
     },
-    track () {
-      this.$ga.page('/')
-    }
+    track() {
+      page({
+        page: '/',
+        title: 'Popup',
+        location: window.location.href,
+      })
+    },
   },
   watch: {},
 }
@@ -374,14 +380,27 @@ body {
   }
 }
 
-.header {
-  display: inline-flex;
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 15px;
-  text-align: center;
-  margin-top: 10px;
-  border: 1px solid #007ee5;
-  padding: 5px;
-  border-radius: 5px;
+
+  .message-icon {
+    width: 25px;
+    margin-right: 10px;
+    box-shadow: none;
+  }
+
+  .header {
+    display: inline-flex;
+    font-size: 15px;
+    text-align: center;
+    margin-top: 10px;
+    border: 1px solid #007ee5;
+    padding: 5px;
+    border-radius: 5px;
+  }
 }
 
 .rows {

@@ -11,5 +11,8 @@ new Vue({
 })
 
 Vue.use(VueAnalytics, {
-  id: 'UA-145327406-1'
+  id: 'UA-145327406-1',
+  // debug: {
+  //   enabled: true
+  // }
 })

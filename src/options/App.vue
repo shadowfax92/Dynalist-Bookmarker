@@ -70,6 +70,8 @@
 
 <script>
 //@flow
+import { page } from 'vue-analytics'
+
 export default {
   data() {
     return {
@@ -151,6 +153,7 @@ export default {
       action: 'get-config',
     }
     chrome.runtime.sendMessage(get_config_event, response => {})
+    this.track()
   },
   methods: {
     onApiTokenChange: function() {
@@ -214,7 +217,6 @@ export default {
     },
     extractDynalistDocuments: function(dynalist_nodes) {
       // TODO: release this with fetch api.
-      console.log(dynalist_nodes)
       let documents = []
       dynalist_nodes.forEach(node => {
         if (node['type'] == 'document') {
@@ -273,9 +275,13 @@ export default {
       this.flags.show_message_box = true
       this.flags.show_option = false
     },
-    track () {
-      this.$ga.page('/')
-    }
+    track() {
+      page({
+        page: '/',
+        title: 'Options Page',
+        location: window.location.href,
+      })
+    },
   },
   watch: {
     // api_token: function(old_val, new_val) {

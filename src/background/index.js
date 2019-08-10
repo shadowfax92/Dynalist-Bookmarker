@@ -17,7 +17,6 @@ chrome.runtime.onInstalled.addListener(details => {
   if (details.reason == 'install') {
     open_settings()
   }
-  setup_google_analytics()
 })
 
 const setup_google_analytics = function () {
@@ -46,6 +45,8 @@ const setup_google_analytics = function () {
   window.ga('create', 'UA-145327406-1', 'auto')
   window.ga('send', 'pageview')
 }
+
+setup_google_analytics()
 
 chrome.runtime.onMessage.addListener(
   (request: EventMessage, sender: any, sendResponse: Function) => {
@@ -170,7 +171,6 @@ const get_dynalist_config = callback => {
 
 const send_runtime_message = value => {
   chrome.runtime.sendMessage(value, response => {
-    console.log('send_runtime_message: response = ' + response)
   })
 }
 
