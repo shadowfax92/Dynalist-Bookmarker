@@ -31,8 +31,16 @@ const SendToDynalist = (
     dynalist_note = bookmark.notes
   }
 
+  let send_to_inbox = false
+  if (bookmark.config && bookmark.config.is_inbox) {
+      send_to_inbox = true
+  }
+  else if(!bookmark.config && config.is_inbox) {
+      send_to_inbox = true
+  }
+
   // support dynalist config override
-  if (config.is_inbox || (bookmark.config ? bookmark.config.is_inbox : false)) {
+  if (send_to_inbox) {
     dynalist_insert_inbox(
       config.api_token,
       dynalist_title,
