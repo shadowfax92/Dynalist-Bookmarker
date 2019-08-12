@@ -25,6 +25,6 @@
     "storage",
     "tabs"
   ],
-  "version": "1.0.2",
+  "version": "1.0.3",
   "content_security_policy": "script-src 'self' 'unsafe-eval' https://www.google-analytics.com;  object-src 'self';"
 }
