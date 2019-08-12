@@ -59,6 +59,10 @@
             >{{ option.title }}</option>
           </select>
         </div>
+        <div class="box" v-if="showBookmarksSelectionBox">
+          <label class="rows">Report bug or feature request?</label>
+          <span class="rows">Fill out the form <a :href='app_feedback'>here.</a></span>
+        </div>
         <div class="button-container" v-if="showButtons">
           <button class="button button-1" v-on:click="onSave">Save</button>
           <button class="button button-1" v-on:click="onCancel">Cancel</button>
@@ -77,6 +81,7 @@ export default {
     return {
       bookmark_dropdown_selection: undefined,
       api_token: '',
+      app_feedback: 'https://forms.gle/YpAxQMCK7r4GL2Bt7',
       options: [],
       existing_config: undefined,
       current_config: {
