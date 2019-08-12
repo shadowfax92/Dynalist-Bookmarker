@@ -140,7 +140,7 @@ chrome.runtime.onMessage.addListener(
           let validate_token_reponse: EventMessage = {
             action: 'response-validate-token',
             data: result.data,
-            status: result.status !== undefined ? result.status : true
+            status: result.status != undefined ? result.status : false
           }
           send_runtime_message(validate_token_reponse)
         })

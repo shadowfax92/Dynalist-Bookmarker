@@ -138,12 +138,12 @@ if (isDevMode) {
         absolute: true
       })
     }),
-    new JavaScriptObfuscator(
-      {
-        rotateUnicodeArray: true
-      },
-      []
-    )
+    // new JavaScriptObfuscator(
+    //   {
+    //     rotateUnicodeArray: true
+    //   },
+    //   []
+    // )
     // new CopyWebpackPlugin([
     //   {
     //     from: path.join(__dirname, '../src/data'),
