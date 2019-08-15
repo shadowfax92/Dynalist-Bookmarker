@@ -14,6 +14,15 @@
     "64": "assets/icons/icon_64.png",
     "128": "assets/icons/icon_128.png"
   },
+  "commands": {
+    "_execute_browser_action": {
+      "description": "Open Dynalist Bookmarker",
+      "suggested_key": {
+        "default": "Alt+I",
+        "mac": "Command+I"
+      }
+    }
+  },
   "manifest_version": 2,
   "name": "Dynalist Bookmarker",
   "options_ui": {
