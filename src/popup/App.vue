@@ -132,12 +132,12 @@ export default {
   mounted() {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       switch (request.action) {
-        case 'response-popup-get-session-data':
+        case 'popup-get-session-data-response':
           if (request.data !== undefined) {
             this.setPageData(request.data)
           }
           break
-        case 'response-dynalist-config':
+        case 'get-config-response':
           if (request.status) {
             this.dynalist_config = request.data
 
@@ -152,7 +152,7 @@ export default {
             this.redirectToConfigureIfRequired()
           }
           break
-        case 'response-fetch-documents':
+        case 'fetch-all-document-response':
           if (request.status) {
             let dynalist_documents = request.data
             this.files.files_list = []

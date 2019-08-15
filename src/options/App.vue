@@ -131,7 +131,7 @@ export default {
   mounted() {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       switch (request.action) {
-        case 'response-validate-token':
+        case 'validate-token-response':
           this.flags.is_valid_token = request.status
           if (request.data) {
             let result = request.data
@@ -142,7 +142,7 @@ export default {
             }
           }
           break
-        case 'response-dynalist-config':
+        case 'get-config-response':
           if (request.data) {
             // config exists. prepopulate with existing config
             this.populateExistingConfig(request.data)

@@ -56,7 +56,7 @@ chrome.runtime.onMessage.addListener(
         get_dynalist_config((response: CallbackResponse) => {
           let dynalist_config: DynalistConfig = (response.data: any)
           let response_to_get_config: EventMessage = {
-            action: 'response-dynalist-config',
+            action: 'get-config-response',
             data: dynalist_config,
             status: true
           }
@@ -74,7 +74,7 @@ chrome.runtime.onMessage.addListener(
             dynalist_config,
             (fetch_documents_response: CallbackResponse) => {
               let result_response: EventMessage = {
-                action: 'response-fetch-documents',
+                action: 'fetch-all-document-response',
                 data: fetch_documents_response.data,
                 status: fetch_documents_response.status
                   ? fetch_documents_response.status
@@ -115,7 +115,7 @@ chrome.runtime.onMessage.addListener(
       case 'popup-get-session-data':
         chrome_local_get_data(data['key'], (result: CallbackResponse) => {
           let popup_session_data_response: EventMessage = {
-            action: 'response-popup-get-session-data',
+            action: 'popup-get-session-data-response',
             data: result.data,
             status: true
           }
@@ -138,7 +138,7 @@ chrome.runtime.onMessage.addListener(
         }
         ValidateToken(dynalist_config, (result: CallbackResponse) => {
           let validate_token_reponse: EventMessage = {
-            action: 'response-validate-token',
+            action: 'validate-token-response',
             data: result.data,
             status: result.status != undefined ? result.status : false
           }
