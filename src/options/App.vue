@@ -61,7 +61,10 @@
         </div>
         <div class="box" v-if="showBookmarksSelectionBox">
           <label class="rows">Report bug or feature request?</label>
-          <span class="rows">Fill out the form <a :href='app_feedback'>here.</a></span>
+          <span class="rows">
+            Fill out the form
+            <a :href="app_feedback">here.</a>
+          </span>
         </div>
         <div class="button-container" v-if="showButtons">
           <button class="button button-1" v-on:click="onSave">Save</button>

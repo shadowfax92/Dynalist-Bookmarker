@@ -34,7 +34,6 @@ const setup_google_analytics = function () {
     if (m.parentNode) {
       m.parentNode.insertBefore(a, m)
     }
-
   })(
     window,
     document,
@@ -170,8 +169,7 @@ const get_dynalist_config = callback => {
 }
 
 const send_runtime_message = value => {
-  chrome.runtime.sendMessage(value, response => {
-  })
+  chrome.runtime.sendMessage(value, response => {})
 }
 
 const chrome_local_store_data = (key, value) => {
