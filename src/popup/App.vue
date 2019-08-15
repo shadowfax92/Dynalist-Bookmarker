@@ -23,6 +23,7 @@
             placeholder="Title of the bookmark"
             v-model="bookmark.title"
             v-on:change="onChange()"
+            ref="title_input"
           />
         </div>
         <div>
@@ -130,6 +131,7 @@ export default {
     }
   },
   mounted() {
+    this.focusInput()
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       switch (request.action) {
         case 'popup-get-session-data-response':
@@ -199,7 +201,6 @@ export default {
           break
       }
     })
-
     // get dynalist config
     let get_config = {
       action: 'get-config',
@@ -225,6 +226,9 @@ export default {
     this.track()
   },
   methods: {
+    focusInput() {
+      this.$refs.title_input.focus()
+    },
     onSubmit: function() {
       chrome.runtime.sendMessage(
         { action: 'send-to-dynalist', data: this.getPageData() },
