@@ -14,7 +14,7 @@
         </div>
         <p>{{ messages.display_text }}</p>
       </div>
-      <div class="popup" v-if="flags.show_popup">
+      <div class="popup" v-if="flags.show_popup" v-on:keydown="handleCmdEnter($event)">
         <div>
           <label class="rows">Title</label>
           <input
@@ -348,6 +348,11 @@ export default {
         title: 'Popup',
         location: window.location.href,
       })
+    },
+    handleCmdEnter: function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.keyCode == 13) {
+        this.onSubmit()
+      }
     },
   },
   watch: {},
