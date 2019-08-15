@@ -136,10 +136,10 @@ export default {
       switch (request.action) {
         case 'validate-token-response':
           this.flags.is_valid_token = request.status
+          this.flags.show_token_response = true
+          
           if (request.data) {
             let result = request.data
-            this.flags.show_token_response = true
-
             if (this.flags.is_valid_token) {
               this.extractDynalistDocuments(result['files'])
             }
