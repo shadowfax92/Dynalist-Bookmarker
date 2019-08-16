@@ -60,9 +60,13 @@
           </select>
         </div>
         <div class="box" v-if="showBookmarksSelectionBox">
-          <label class="rows">Report bug or feature request?</label>
+          <label class="rows">INFO</label>
           <span class="rows">
-            Fill out the form
+            How to use
+            <a :href="app_wiki">wiki.</a>
+          </span>
+          <span class="rows">
+            Report bug or feature request - Fill out the form
             <a :href="app_feedback">here.</a>
           </span>
         </div>
@@ -85,6 +89,7 @@ export default {
       bookmark_dropdown_selection: undefined,
       api_token: '',
       app_feedback: 'https://forms.gle/YpAxQMCK7r4GL2Bt7',
+      app_wiki: 'http://bit.ly/cdbwiki',
       options: [],
       existing_config: undefined,
       current_config: {
@@ -137,7 +142,7 @@ export default {
         case 'validate-token-response':
           this.flags.is_valid_token = request.status
           this.flags.show_token_response = true
-          
+
           if (request.data) {
             let result = request.data
             if (this.flags.is_valid_token) {
