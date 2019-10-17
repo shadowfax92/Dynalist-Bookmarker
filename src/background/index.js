@@ -67,23 +67,60 @@ chrome.runtime.onMessage.addListener(
         open_settings()
         break
       case 'fetch-all-documents':
-        get_dynalist_config((response: CallbackResponse) => {
-          let dynalist_config: DynalistConfig = (response.data: any)
-          FetchAllDocuments(
-            dynalist_config,
-            (fetch_documents_response: CallbackResponse) => {
+        chrome_local_get_data(
+          'fetch-all-documents-cache',
+          (result: CallbackResponse) => {
+            if (result.data) {
+              // all documents cache found. Send this data instead and update cache in background.
               let result_response: EventMessage = {
                 action: 'fetch-all-document-response',
-                data: fetch_documents_response.data,
-                status: fetch_documents_response.status
-                  ? fetch_documents_response.status
-                  : true
+                data: result.data,
+                status: true
               }
 
               send_runtime_message(result_response)
             }
-          )
-        })
+
+            let foundInCache = result.data !== undefined
+            // $FlowFixMe
+            let cacheDocumentsLength: number =
+              result.data != undefined ? result.data.length : 0
+            
+            // Fetch everything from scratch and update cache
+            get_dynalist_config((response: CallbackResponse) => {
+              let dynalist_config: DynalistConfig = (response.data: any)
+              FetchAllDocuments(
+                dynalist_config,
+                (fetch_documents_response: CallbackResponse) => {
+                  let result_response: EventMessage = {
+                    action: 'fetch-all-document-response',
+                    data: fetch_documents_response.data,
+                    status: fetch_documents_response.status
+                      ? fetch_documents_response.status
+                      : true
+                  }
+
+                  // only update if not found in cache or lenghts are not matching.
+                  // $FlowFixMe
+                  let newDocumentsLength: number = fetch_documents_response.data.length
+                  if (
+                    !foundInCache ||
+                    newDocumentsLength != cacheDocumentsLength
+                  ) {
+                    send_runtime_message(result_response)
+                  }
+
+                  // update cache
+                  chrome_local_store_data(
+                    'fetch-all-documents-cache',
+                    fetch_documents_response.data
+                  )
+                }
+              )
+            })
+          }
+        )
+
         break
       case 'send-to-dynalist':
         get_dynalist_config((response: CallbackResponse) => {
