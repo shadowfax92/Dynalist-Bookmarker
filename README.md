@@ -1,6 +1,10 @@
 # dynalist-bookmarker
 
-Boilerplate for Chrome extension using Vue.js and Webpack with Hot Reloading Enabled
+Chrome extension built using Vue.js
+
+Store Link - https://chrome.google.com/webstore/detail/dynalist-bookmarker/mbempfckkkcncamnaopmfagmocdmlknf
+
+### NOTE: I'm not actively working on this. For any new features, feel free to raise PR. I'm happy to review and include in the extension.
 
 ## Scripts
 

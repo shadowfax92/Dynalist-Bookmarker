@@ -1,7 +1,7 @@
 {
   "author": {
-    "email": "nikhilsv92@gmail.com",
-    "name": "Nikhil Sonti",
+    "email": "shadowfax.apps@gmail.com",
+    "name": "Shadowfax Apps",
     "url": "https://shadowfax92.github.io/"
   },
   "dependencies": {
@@ -40,7 +40,6 @@
     "style-loader": "^0.23.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
-    "vue-analytics": "^5.17.0",
     "vue-loader": "^15.7.1",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "^2.6.10",

@@ -14,7 +14,11 @@
         </div>
         <p>{{ messages.display_text }}</p>
       </div>
-      <div class="popup" v-if="flags.show_popup" v-on:keydown="handleCmdEnter($event)">
+      <div
+        class="popup"
+        v-if="flags.show_popup"
+        v-on:keydown="handleCmdEnter($event)"
+      >
         <div>
           <label class="rows">Title</label>
           <input
@@ -58,12 +62,18 @@
         </div>
         <div v-if="files.show_files_dropdown">
           <label class="rows">Folder</label>
-          <select v-model="files.selected" @change="onConfigOverride()" class="rows">
+          <select
+            v-model="files.selected"
+            @change="onConfigOverride()"
+            class="rows"
+          >
             <option
               v-for="file in files.files_list"
               v-bind:key="file.id"
               v-bind:value="file"
-            >{{ file.title }}</option>
+            >
+              {{ file.title }}
+            </option>
           </select>
         </div>
         <div class="button-container">
@@ -79,7 +89,6 @@
 //@flow
 import { request } from 'http'
 import { setTimeout } from 'timers'
-import { page } from 'vue-analytics'
 
 export default {
   data() {
@@ -148,7 +157,7 @@ export default {
               let get_files = {
                 action: 'fetch-all-documents',
               }
-              chrome.runtime.sendMessage(get_files, response => {})
+              chrome.runtime.sendMessage(get_files, (response) => {})
             }
 
             this.redirectToConfigureIfRequired()
@@ -160,7 +169,7 @@ export default {
             this.files.files_list = []
 
             // populate dropdown model
-            dynalist_documents.forEach(file => {
+            dynalist_documents.forEach((file) => {
               let current_option = {
                 id: file.id,
                 title: file.title,
@@ -205,10 +214,10 @@ export default {
     let get_config = {
       action: 'get-config',
     }
-    chrome.runtime.sendMessage(get_config, response => {})
+    chrome.runtime.sendMessage(get_config, (response) => {})
 
     // get popup old session data if any.
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       var activeTab = tabs[0]
       this.bookmark.title = activeTab.title
       this.bookmark.url = activeTab.url
@@ -221,23 +230,22 @@ export default {
         },
       }
 
-      chrome.runtime.sendMessage(message, response => {})
+      chrome.runtime.sendMessage(message, (response) => {})
     })
-    this.track()
   },
   methods: {
     focusInput() {
       this.$refs.title_input.focus()
     },
-    onSubmit: function() {
+    onSubmit: function () {
       chrome.runtime.sendMessage(
         { action: 'send-to-dynalist', data: this.getPageData() },
-        response => {
+        (response) => {
           // this.closePopup()
         }
       )
     },
-    getPageData: function() {
+    getPageData: function () {
       let data = {
         title: this.bookmark.title,
         tags: this.bookmark.tags,
@@ -249,7 +257,7 @@ export default {
       }
       return data
     },
-    setPageData: function(data) {
+    setPageData: function (data) {
       if (data.title != '') {
         this.bookmark.title = data.title
       }
@@ -267,17 +275,17 @@ export default {
       // don't want to save the state of dynalist as
       // document might delete or change or what not.
     },
-    onCancel: function() {
+    onCancel: function () {
       this.clearSavedData()
       this.closePopup()
     },
-    closePopup: function(timeout_seconds = 0) {
+    closePopup: function (timeout_seconds = 0) {
       this.clearSavedData()
       setTimeout(() => {
         window.close()
       }, timeout_seconds * 1000)
     },
-    onChange: function() {
+    onChange: function () {
       chrome.runtime.sendMessage(
         {
           action: 'popup-store-session-data',
@@ -286,10 +294,10 @@ export default {
             value: this.getPageData(),
           },
         },
-        response => {}
+        (response) => {}
       )
     },
-    onConfigOverride: function() {
+    onConfigOverride: function () {
       if (this.files.selected.id != this.dynalist_config.document_id) {
         this.flags.is_config_overriden = true
 
@@ -301,7 +309,7 @@ export default {
         this.flags.is_config_overriden = false
       }
     },
-    clearSavedData: function() {
+    clearSavedData: function () {
       chrome.runtime.sendMessage(
         {
           action: 'popup-remove-session-data',
@@ -309,10 +317,10 @@ export default {
             key: this.page_url,
           },
         },
-        response => {}
+        (response) => {}
       )
     },
-    redirectToConfigureIfRequired: function() {
+    redirectToConfigureIfRequired: function () {
       if (
         this.dynalist_config === undefined ||
         this.dynalist_config.api_token === undefined ||
@@ -323,11 +331,11 @@ export default {
           action: 'redirect-to-settings',
         }
         setTimeout(() => {
-          chrome.runtime.sendMessage(show_settings_message, response => {})
+          chrome.runtime.sendMessage(show_settings_message, (response) => {})
         }, 2000)
       }
     },
-    showMessage: function(message_type) {
+    showMessage: function (message_type) {
       switch (message_type) {
         case 'success':
           this.messages.display_text = this.messages.success.text
@@ -346,14 +354,7 @@ export default {
       this.flags.show_message_box = true
       this.flags.show_popup = false
     },
-    track() {
-      page({
-        page: '/',
-        title: 'Popup',
-        location: window.location.href,
-      })
-    },
-    handleCmdEnter: function(e) {
+    handleCmdEnter: function (e) {
       if ((e.metaKey || e.ctrlKey) && e.keyCode == 13) {
         this.onSubmit()
       }

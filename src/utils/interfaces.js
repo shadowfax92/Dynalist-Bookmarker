@@ -5,7 +5,7 @@ export type DynalistBookmark = {
   url: string,
   tags: string,
   notes: string,
-  config?: DynalistConfigOverride | typeof(undefined),
+  config?: DynalistConfigOverride | typeof undefined,
 }
 
 export type EventMessage = {
@@ -15,9 +15,9 @@ export type EventMessage = {
 }
 
 export type DynalistConfigOverride = {
-    document_id: string,
-    is_inbox: boolean,
-    parent_id?: string,
+  document_id: string,
+  is_inbox: boolean,
+  parent_id?: string,
 }
 
 export type DynalistConfig = {
@@ -29,8 +29,9 @@ export type DynalistConfig = {
 }
 
 export type CallbackResponse = {
-    status: boolean,
-    data?:  {[key: string]: any} | any,
+  status: boolean,
+  data?: { [key: string]: any } | any,
 }
 
 export type Callback = (response: CallbackResponse) => any
+

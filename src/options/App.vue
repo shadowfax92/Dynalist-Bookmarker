@@ -3,7 +3,11 @@
     <div class="container">
       <div class="message-box" v-if="flags.show_message_box">
         <div>
-          <img class="message-icon" v-bind:src="messages.display_icon" alt="Success" />
+          <img
+            class="message-icon"
+            v-bind:src="messages.display_icon"
+            alt="Success"
+          />
         </div>
         <p>{{ messages.display_text }}</p>
       </div>
@@ -12,9 +16,7 @@
           <label class="rows">Step-1: Paste Dynalist Token</label>
           <span class="rows">
             Please copy and paste the token from
-            <a
-              href="https://dynalist.io/developer"
-            >dynalist link.</a>
+            <a href="https://dynalist.io/developer">dynalist link.</a>
           </span>
           <input
             class="rows"
@@ -25,22 +27,28 @@
             v-on:keyup.enter="onApiTokenChange()"
           />
           <div class="rows" v-if="flags.show_token_response">
-            <span v-if="isValidationSuccessful">Entered token is valid. Hurray! 🎉</span>
-            <span
-              v-if="!isValidationSuccessful"
-            >Entered token is invalid 😢, clear the token and copy-paste the whole thing again.</span>
+            <span v-if="isValidationSuccessful"
+              >Entered token is valid. Hurray! 🎉</span
+            >
+            <span v-if="!isValidationSuccessful"
+              >Entered token is invalid 😢, clear the token and copy-paste the
+              whole thing again.</span
+            >
           </div>
           <br />
           <span class="rows">
-            <b class="privacy">PRIVACY:</b> Note, the token is never upload. It's only used on this device.
+            <b class="privacy">PRIVACY:</b> Note, the token is never upload.
+            It's only used on this device.
           </span>
         </div>
         <div class="box" v-if="showBookmarksSelectionBox">
           <label class="rows">Step-2: Bookmarks location</label>
-          <span class="rows">Please select the default location for your bookmarks.</span>
+          <span class="rows"
+            >Please select the default location for your bookmarks.</span
+          >
           <span class="rows">
             <input
-              style="width: auto; margin-right: 5px;"
+              style="width: auto; margin-right: 5px"
               type="checkbox"
               id="send-to-inbox-checkbox"
               v-model="flags.is_inbox_checkbox_checked"
@@ -56,7 +64,9 @@
               v-for="option in options"
               v-bind:key="option.id"
               v-bind:value="option"
-            >{{ option.title }}</option>
+            >
+              {{ option.title }}
+            </option>
           </select>
         </div>
         <div class="box" v-if="showBookmarksSelectionBox">
@@ -81,7 +91,6 @@
 
 <script>
 //@flow
-import { page } from 'vue-analytics'
 
 export default {
   data() {
@@ -122,13 +131,13 @@ export default {
     }
   },
   computed: {
-    showBookmarksSelectionBox: function() {
+    showBookmarksSelectionBox: function () {
       return this.flags.is_valid_token
     },
-    showButtons: function() {
+    showButtons: function () {
       return this.flags.bookmark_location_selected && this.flags.is_valid_token
     },
-    isValidationSuccessful: function() {
+    isValidationSuccessful: function () {
       if (this.flags.is_valid_token) {
         return true
       } else {
@@ -165,17 +174,16 @@ export default {
     let get_config_event = {
       action: 'get-config',
     }
-    chrome.runtime.sendMessage(get_config_event, response => {})
-    this.track()
+    chrome.runtime.sendMessage(get_config_event, (response) => {})
   },
   methods: {
-    onApiTokenChange: function() {
+    onApiTokenChange: function () {
       chrome.runtime.sendMessage({
         action: 'validate-token',
         data: this.api_token,
       })
     },
-    populateExistingConfig: function(config) {
+    populateExistingConfig: function (config) {
       this.existing_config = config
       this.api_token = config.api_token
       // need to populate bookmark_dropdown_selection as
@@ -186,7 +194,7 @@ export default {
       this.bookmark_dropdown_selection.is_inbox = config.is_inbox
       this.onApiTokenChange()
     },
-    onSave: function() {
+    onSave: function () {
       let config = {
         api_token: this.api_token,
         is_inbox: this.current_config.is_inbox,
@@ -198,20 +206,20 @@ export default {
         action: 'store-dynalist-config',
         data: config,
       }
-      chrome.runtime.sendMessage(eventMessage, response => {})
+      chrome.runtime.sendMessage(eventMessage, (response) => {})
       this.showMessage('success')
       this.closeOptionsWindow(this.messages.success.timeout)
     },
-    onCancel: function() {
+    onCancel: function () {
       this.showMessage('cancel')
       this.closeOptionsWindow(this.messages.cancel.timeout)
     },
-    closeOptionsWindow: function(timeout_seconds = 0) {
+    closeOptionsWindow: function (timeout_seconds = 0) {
       setTimeout(() => {
         window.close()
       }, timeout_seconds * 1000)
     },
-    onChangeBookmarkSelection: function(caller) {
+    onChangeBookmarkSelection: function (caller) {
       if (caller == 'inbox' && this.flags.is_inbox_checkbox_checked) {
         this.current_config.is_inbox = true
         this.current_config.text = 'Send to Inbox'
@@ -228,10 +236,10 @@ export default {
       }
       this.flags.bookmark_location_selected = true
     },
-    extractDynalistDocuments: function(dynalist_nodes) {
+    extractDynalistDocuments: function (dynalist_nodes) {
       // TODO: release this with fetch api.
       let documents = []
-      dynalist_nodes.forEach(node => {
+      dynalist_nodes.forEach((node) => {
         if (node['type'] == 'document') {
           let document = {
             id: node.id,
@@ -243,11 +251,11 @@ export default {
         this.populateOptions(documents)
       })
     },
-    populateOptions: function(documents) {
+    populateOptions: function (documents) {
       this.options = []
       this.flags.bookmark_location_selected = false
 
-      documents.forEach(document => {
+      documents.forEach((document) => {
         let current_option = {
           title: document.title,
           id: document.id,
@@ -273,7 +281,7 @@ export default {
         }
       }
     },
-    showMessage: function(message_type) {
+    showMessage: function (message_type) {
       switch (message_type) {
         case 'success':
           this.messages.display_text = this.messages.success.text
@@ -287,13 +295,6 @@ export default {
       }
       this.flags.show_message_box = true
       this.flags.show_option = false
-    },
-    track() {
-      page({
-        page: '/',
-        title: 'Options Page',
-        location: window.location.href,
-      })
     },
   },
   watch: {

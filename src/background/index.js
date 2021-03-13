@@ -2,14 +2,14 @@
 import {
   SendToDynalist,
   ValidateToken,
-  FetchAllDocuments
+  FetchAllDocuments,
 } from '../utils/dynalist'
 
 import type {
   DynalistConfig,
   EventMessage,
   DynalistBookmark,
-  CallbackResponse
+  CallbackResponse,
 } from '../utils/interfaces'
 
 // OnInstall handler
@@ -18,34 +18,6 @@ chrome.runtime.onInstalled.addListener(details => {
     open_settings()
   }
 })
-
-const setup_google_analytics = function () {
-  ;(function (i, s, o, g, r, a, m) {
-    i['GoogleAnalyticsObject'] = r
-    ;(i[r] =
-      i[r] ||
-      function () {
-        ;(i[r].q = i[r].q || []).push(arguments)
-      }),
-    (i[r].l = 1 * new Date())
-    ;(a = s.createElement(o)), (m = s.getElementsByTagName(o)[0])
-    a.async = true
-    a.src = g
-    if (m.parentNode) {
-      m.parentNode.insertBefore(a, m)
-    }
-  })(
-    window,
-    document,
-    'script',
-    'https://www.google-analytics.com/analytics.js',
-    'ga'
-  )
-  window.ga('create', 'UA-145327406-1', 'auto')
-  window.ga('send', 'pageview')
-}
-
-setup_google_analytics()
 
 chrome.runtime.onMessage.addListener(
   (request: EventMessage, sender: any, sendResponse: Function) => {
@@ -57,7 +29,7 @@ chrome.runtime.onMessage.addListener(
           let response_to_get_config: EventMessage = {
             action: 'get-config-response',
             data: dynalist_config,
-            status: true
+            status: true,
           }
 
           send_runtime_message(response_to_get_config)
@@ -75,7 +47,7 @@ chrome.runtime.onMessage.addListener(
               let result_response: EventMessage = {
                 action: 'fetch-all-document-response',
                 data: result.data,
-                status: true
+                status: true,
               }
 
               send_runtime_message(result_response)
@@ -85,7 +57,7 @@ chrome.runtime.onMessage.addListener(
             // $FlowFixMe
             let cacheDocumentsLength: number =
               result.data != undefined ? result.data.length : 0
-            
+
             // Fetch everything from scratch and update cache
             get_dynalist_config((response: CallbackResponse) => {
               let dynalist_config: DynalistConfig = (response.data: any)
@@ -97,12 +69,12 @@ chrome.runtime.onMessage.addListener(
                     data: fetch_documents_response.data,
                     status: fetch_documents_response.status
                       ? fetch_documents_response.status
-                      : true
+                      : true,
                   }
 
                   // only update if not found in cache or lenghts are not matching.
                   // $FlowFixMe
-                  let newDocumentsLength: number = fetch_documents_response.data.length
+                  let newDocumentsLength = fetch_documents_response.data.length
                   if (
                     !foundInCache ||
                     newDocumentsLength != cacheDocumentsLength
@@ -133,7 +105,7 @@ chrome.runtime.onMessage.addListener(
               let response_message: EventMessage = {
                 action: 'send-to-dynalist-response',
                 status: response.status,
-                data: response.data
+                data: response.data,
               }
 
               send_runtime_message(response_message)
@@ -153,7 +125,7 @@ chrome.runtime.onMessage.addListener(
           let popup_session_data_response: EventMessage = {
             action: 'popup-get-session-data-response',
             data: result.data,
-            status: true
+            status: true,
           }
           send_runtime_message(popup_session_data_response)
         })
@@ -170,13 +142,13 @@ chrome.runtime.onMessage.addListener(
           api_token: data,
           document_id: '',
           document_name: '',
-          is_inbox: false
+          is_inbox: false,
         }
         ValidateToken(dynalist_config, (result: CallbackResponse) => {
           let validate_token_reponse: EventMessage = {
             action: 'validate-token-response',
             data: result.data,
-            status: result.status != undefined ? result.status : false
+            status: result.status != undefined ? result.status : false,
           }
           send_runtime_message(validate_token_reponse)
         })
@@ -189,7 +161,7 @@ chrome.runtime.onMessage.addListener(
 
 const open_settings = () => {
   chrome.tabs.create({
-    url: 'chrome://extensions/?options=' + chrome.runtime.id
+    url: 'chrome://extensions/?options=' + chrome.runtime.id,
   })
   //   chrome.tabs.create({ url: "options.html" });
 }
@@ -198,7 +170,7 @@ const get_dynalist_config = callback => {
   chrome_local_get_data('config', (result: CallbackResponse) => {
     let response: CallbackResponse = {
       status: result.status,
-      data: (result.data: any)
+      data: (result.data: any),
     }
 
     callback(response)
@@ -222,13 +194,13 @@ const chrome_local_get_data = (key, callback) => {
     if (key_value) {
       let response: CallbackResponse = {
         status: true,
-        data: key_value[key]
+        data: key_value[key],
       }
       callback(response)
     } else {
       let response: CallbackResponse = {
         status: false,
-        data: undefined
+        data: undefined,
       }
       callback(response)
     }
